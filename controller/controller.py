@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Wed Feb 26 01:51:42 2025
 
 @author: Vladimir
-"""
+'''
 
 import model.data_loader as dl
 import model.data_processor as dp
@@ -34,7 +34,7 @@ class Controller:
         #Вызывает функцию separator для разделения данных.
 
         if not self.data:
-            self.ui.update_message("Данные не загружены.")
+            self.ui.update_message('Данные не загружены.')
         
         # Вызываем функцию separator
         pole_dipole, dipole_dipole, schlumberger = dp.separator(self.data)
@@ -44,22 +44,22 @@ class Controller:
     
     
     def get_histogram(self, data, a, title):
-        """
+        '''
         Возвращает гистограмму для данных.
-        """
+        '''
         return dp.gistogramma(data, a, title)
     
     
     
         
     def filter_data_c(self, array, min_ROK, max_ROK, param_index):
-        """
+        '''
         Фильтрует данные через процессор.
         :param array: Исходный массив.
         :param min_ROK: Минимальное значение ROK.
         :param max_ROK: Максимальное значение ROK.
         :return: Отфильтрованный массив.
-        """
+        '''
         
         
         if float(min_ROK) > float(max_ROK) or float(min_ROK) == float(max_ROK):
@@ -84,9 +84,9 @@ class Controller:
     
     
     def safe_data(self, path, array, zagolovok_file, a):
-        """
+        '''
         Возвращает гистограмму для данных.
-        """
+        '''
         return ds.REC_in_files_for_INV(path, array, zagolovok_file, a)
 
 
