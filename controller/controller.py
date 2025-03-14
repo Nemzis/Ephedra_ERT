@@ -60,17 +60,17 @@ class Controller:
         :param max_ROK: Максимальное значение ROK.
         :return: Отфильтрованный массив.
         '''
-        
-        
-        if float(min_ROK) > float(max_ROK) or float(min_ROK) == float(max_ROK):
-            self.ui.update_message('Ошибка ввода данных: min_ROK >= max_ROK')
-            return array
+
         
         try:
             # Преобразуем значения в float
             min_ROK = float(min_ROK) if min_ROK else float('-inf')  # Если min_ROK пустое, используем -∞
             max_ROK = float(max_ROK) if max_ROK else float('inf')   # Если max_ROK пустое, используем +∞
-    
+            
+            if min_ROK > max_ROK or min_ROK == max_ROK:
+                self.ui.update_message('Ошибка ввода данных: min_ROK >= max_ROK')
+                return array
+            
             # Фильтруем массив
             array_filter = dp.filter_array(array, min_ROK, max_ROK, param_index)
     

@@ -5,7 +5,7 @@ Created on Wed Feb 26 01:51:23 2025
 '''
 import tkinter as tk
 from tkinter import ttk, filedialog
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 #импорт других модулей программы
@@ -86,73 +86,84 @@ class UI:
         
         
         a = 0 #row
+        
+        
         self.button_safe_all = tk.Button(self.nested_tab_all, 
                                          state='disabled',
                                          text = 'Сохранить файл (Res3Dinv)', 
                                          command = self.safe_data)
         self.button_safe_all.grid(row=a, column=0, pady = 5, padx = 5, sticky='wn')
-        
-        
         a += 1
+        
+        
+        # Customer Details Frame
+        self.customer_frame = tk.LabelFrame(self.nested_tab_all, text="Сохранение Файла")
+        self.customer_frame.grid(row=a, column=0, padx=10, pady=10, sticky="NSEW")
+        a += 1
+        
+        
         # Поле ввода для заголовка файла
-        label_zagolovok = tk.Label(self.nested_tab_all, text='Заголовок файла \n Res3Dinv:')
-        label_zagolovok.grid(row=a, column=0, sticky='wn')
+        label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
+        label_zagolovok.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
         
         
         a += 1
-        self.entry_zagolovok = tk.Entry(self.nested_tab_all)
-        self.entry_zagolovok.grid(row=a, column=0, sticky='w')
+        self.entry_zagolovok = tk.Entry(self.customer_frame, width=15)
+        self.entry_zagolovok.grid(row=a, column=0, sticky='w', pady = 5, padx = 5)
+        self.entry_zagolovok.insert(0, 'Test')
         
         
         a += 1
         # Поле ввода для параметра шага
-        label_a = tk.Label(self.nested_tab_all, text='Половина расстояния \n между электродами')
+        label_a = tk.Label(self.customer_frame, text='Половина расстояния\n между электродами')
         label_a.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
         
         a += 1
-        self.entry_a = tk.Entry(self.nested_tab_all)
+        self.entry_a = tk.Entry(self.customer_frame, width=15)
         self.entry_a.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
-                
+        self.entry_a.insert(0, '0.02')
+        
         
         a += 1
-        label_diap = tk.Label(self.nested_tab_all, text='\n Диапазон данных:')
-        label_diap.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
-          
+        # Customer Details Frame
+        self.customer_frame_filter = tk.LabelFrame(self.nested_tab_all, text="Оконный фильтр")
+        self.customer_frame_filter.grid(row=a, column=0, padx=10, pady=10, sticky="NSEW")
+        
         
         a += 1
-        label_Rok_min = tk.Label(self.nested_tab_all, text='Минимум')
+        label_Rok_min = tk.Label(self.customer_frame_filter, text='Минимум')
         label_Rok_min.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
         
         
         a += 1
-        self.entry_Rok_min = tk.Entry(self.nested_tab_all)
+        self.entry_Rok_min = tk.Entry(self.customer_frame_filter, width=10)
         self.entry_Rok_min.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
         
         
         a += 1    
-        label_Rok_max = tk.Label(self.nested_tab_all, text='Максимум')
+        label_Rok_max = tk.Label(self.customer_frame_filter, text='Максимум')
         label_Rok_max.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
         
         
         a += 1
-        self.entry_Rok_max = tk.Entry(self.nested_tab_all)
+        self.entry_Rok_max = tk.Entry(self.customer_frame_filter, width=10)
         self.entry_Rok_max.grid(row=a, column=0, sticky='wn', pady = 5, padx = 5)
         
         
         
         
         a += 1
-        open_rasschet = tk.Button(self.nested_tab_all, text='Рассчитать', command = self.filter_data)
-        open_rasschet.grid(row=a, column=0, padx = 5, pady = 5, sticky='wn')
+        open_rasschet = tk.Button(self.customer_frame_filter, text='Рассчитать', command = self.filter_data)
+        open_rasschet.grid(row=a, column=0, padx = 5, pady = 5)
         
         
         a += 1
-        open_sbros = tk.Button(self.nested_tab_all, text='Сбросить')
-        open_sbros.grid(row=a, column=0, padx = 5, pady = 5, sticky='wn')
+        open_sbros = tk.Button(self.customer_frame_filter, text='Сбросить', command = self.reset_filter)
+        open_sbros.grid(row=a, column=0, padx = 5, pady = 5)
         
         a += 1
-        open_apply = tk.Button(self.nested_tab_all, text='Применить')
-        open_apply.grid(row=a, column=0, padx = 5, pady = 5, sticky='wn')
+        open_apply = tk.Button(self.customer_frame_filter, text='Применить', command = self.apply_filter)
+        open_apply.grid(row=a, column=0, padx = 5, pady = 5)
         
         
         
@@ -160,7 +171,7 @@ class UI:
         self.array_post_filter = list()
         
         # Создаём выпадающий список
-        self.param_combobox = ttk.Combobox(self.nested_tab_all, values=['RoK', 'V', 'I', 'K'])
+        self.param_combobox = ttk.Combobox(self.nested_tab_all, values=['RoK', 'V (mV)', 'I (mA)', 'K'])
         self.param_combobox.grid(row=0, column=1, padx=5, pady=5, sticky='wn')
         self.param_combobox.current(0)  # Устанавливаем значение по умолчанию (RoK)
 
@@ -215,27 +226,27 @@ class UI:
                 try:
                     self.pole_dipole, self.dipole_dipole, self.schlumberger, self.data = self.controller.processing_file()
                     
-                    self.show_histogram(self.nested_tab_all, self.data, 1, 'KC')
+                    self.show_histogram(self.nested_tab_all, self.data, 1, 'RoK')
                     self.button_safe_all.config(state='normal')
                    
             
                     if len(self.dipole_dipole) != 0:
                         self.nested_notebook.add(self.nested_tab_DD, text='Дипольная')
                         # Добавляем гистограмму 
-                        self.show_histogram(self.nested_tab_DD, self.dipole_dipole, 1, 'KC')
+                        self.show_histogram(self.nested_tab_DD, self.dipole_dipole, 1, 'RoK')
                         
                         
                     if len(self.schlumberger) != 0:
                         self.nested_notebook.add(self.nested_tab_SHL, text='Шлюмберже')
                         # Добавляем гистограмму
-                        self.show_histogram(self.nested_tab_SHL, self.schlumberger, 1, 'KC')
+                        self.show_histogram(self.nested_tab_SHL, self.schlumberger, 1, 'RoK')
                         
                         
                         
                     if len(self.pole_dipole) != 0:
                         self.nested_notebook.add(self.nested_tab_PD, text='Трехэлектроджная установка') 
                         # Добавляем гистограмму
-                        self.show_histogram(self.nested_tab_PD, self.pole_dipole, 1, 'KC')
+                        self.show_histogram(self.nested_tab_PD, self.pole_dipole, 1, 'RoK')
                       
                     self.message_var.set(f'Данные разделены\n {len(self.pole_dipole)} - трехэлектродка\n'\
                                          f'{len(self.dipole_dipole)} - дипольная\n'\
@@ -273,8 +284,8 @@ class UI:
         '''
         param_mapping = {
             'RoK': 1,  # Индекс для RoK
-            'V': 8,    # Индекс для V
-            'I': 9,    # Индекс для I
+            'V (mV)': 8,    # Индекс для V
+            'I (mA)': 9,    # Индекс для I
             'K': 11
         }
         return param_mapping.get(param, 1)  # По умолчанию возвращаем индекс для RoK
@@ -339,7 +350,7 @@ class UI:
     
         # Показываем гистограмму с отфильтрованными данными
         self.show_histogram(self.nested_tab_all, self.array_post_filter, param_index , f'Гистограмма для {selected_param}')
-        #self.show_histogram(self.nested_tab_all, self.array_post_filter, 1, 'KC')
+        #self.show_histogram(self.nested_tab_all, self.array_post_filter, 1, 'RoK')
         
     def reset_filter(self):
         
@@ -359,7 +370,7 @@ class UI:
             self.data = self.array_post_filter
 
         
-        
+    
         
     def safe_data(self):
         # Получаем значения из полей ввода
