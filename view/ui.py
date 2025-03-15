@@ -9,7 +9,7 @@ from tkinter import ttk, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 #импорт других модулей программы
-import view.ui_KomarovSP as KSP
+import module.ui_KomarovSP as KSP
 
 
 class UI:
@@ -20,7 +20,7 @@ class UI:
         self.root.title('Ephedra_ERT')
         
         # Устанавливаем минимальные размеры окна
-        self.root.minsize(width = 800, height = 600)  # Минимальная ширина 600, высота 400
+        self.root.minsize(width=800, height=600)  # Минимальная ширина 600, высота 400
         
         # Создаем Notebook (контейнер для вкладок)
         self.notebook = ttk.Notebook(self.root)
@@ -29,7 +29,23 @@ class UI:
         # Создаем вкладку для основной программы
         self.create_main_tab()
         
-        self.create_settings_tab()  # Добавляем вкладку с настройками
+    
+        # Создаем текстовое поле для сообщений с прокруткой
+        self.message_frame = tk.Frame(self.root)
+        self.message_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
+    
+        self.message_area = tk.Text(self.message_frame, height=5, wrap=tk.WORD)
+        self.message_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    
+        # Добавляем прокрутку
+        scrollbar = tk.Scrollbar(self.message_frame, command=self.message_area.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.message_area.config(yscrollcommand=scrollbar.set)
+        
+        
+        #Модули
+        self.create_Komarov_SP_tab()
+        
         
         
     def create_main_tab(self): 
@@ -44,14 +60,13 @@ class UI:
     
         self.input_dir = tk.StringVar()
         self.output_dir = tk.StringVar()
+        
         # Frame для основного содержимого
         main_frame = tk.Frame(self.root)
         main_frame.pack(fill=tk.BOTH, expand=True)
         
-        #текстовое поле
-        self.message_var = tk.StringVar(value = '')
-        label_message = tk.Label(self.root, textvariable=self.message_var, bg='lightgray')
-        label_message.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
+        
+
        
         
     def create_menu_tab(self, parent):
@@ -63,7 +78,7 @@ class UI:
         menu_frame = tk.Frame(parent)
         menu_frame.grid(row=0, column=0, padx = 5, pady = 5, sticky='wn')
         
-        open_button = tk.Button(menu_frame, text='Выбрать директорию', command = self.open_directory)
+        open_button = ttk.Button(menu_frame, text='Выбрать директорию', command = self.open_directory)
         open_button.grid(row=0, column=0, padx = 5, pady = 5, sticky='wn')
         
        
@@ -88,7 +103,7 @@ class UI:
         a = 0 #row
         
         
-        self.button_safe_all = tk.Button(self.nested_tab_all, 
+        self.button_safe_all = ttk.Button(self.nested_tab_all, 
                                          state='disabled',
                                          text = 'Сохранить файл (Res3Dinv)', 
                                          command = self.safe_data)
@@ -98,7 +113,7 @@ class UI:
         
         # Customer Details Frame
         self.customer_frame = tk.LabelFrame(self.nested_tab_all, text="Сохранение Файла")
-        self.customer_frame.grid(row=a, column=0, padx=10, pady=10, sticky="NSEW")
+        self.customer_frame.grid(row=a, column=0, padx=5, pady=5, sticky="NSEW")
         a += 1
         
         
@@ -153,16 +168,16 @@ class UI:
         
         
         a += 1
-        open_rasschet = tk.Button(self.customer_frame_filter, text='Рассчитать', command = self.filter_data)
+        open_rasschet = ttk.Button(self.customer_frame_filter, text='Рассчитать', command = self.filter_data)
         open_rasschet.grid(row=a, column=0, padx = 5, pady = 5)
         
         
         a += 1
-        open_sbros = tk.Button(self.customer_frame_filter, text='Сбросить', command = self.reset_filter)
+        open_sbros = ttk.Button(self.customer_frame_filter, text='Сбросить', command = self.reset_filter)
         open_sbros.grid(row=a, column=0, padx = 5, pady = 5)
         
         a += 1
-        open_apply = tk.Button(self.customer_frame_filter, text='Применить', command = self.apply_filter)
+        open_apply = ttk.Button(self.customer_frame_filter, text='Применить', command = self.apply_filter)
         open_apply.grid(row=a, column=0, padx = 5, pady = 5)
         
         
@@ -176,8 +191,8 @@ class UI:
         self.param_combobox.current(0)  # Устанавливаем значение по умолчанию (RoK)
 
         # Кнопка для отображения гистограммы
-        show_button = tk.Button(self.nested_tab_all, text='Показать гистограмму', command = self.show_histogram_wrapper)
-        show_button.grid(row=0, column=2, padx=5, pady=5, sticky='wn')
+        show_button = ttk.Button(self.nested_tab_all, text='Показать гистограмму', command = self.show_histogram_wrapper)
+        show_button.grid(row=0, column=2, padx=5, pady=5, ipadx=1, ipady=0, sticky='wn')
         #---------------------------
         
         
@@ -248,18 +263,18 @@ class UI:
                         # Добавляем гистограмму
                         self.show_histogram(self.nested_tab_PD, self.pole_dipole, 1, 'RoK')
                       
-                    self.message_var.set(f'Данные разделены\n {len(self.pole_dipole)} - трехэлектродка\n'\
+                    self.update_message(f'Данные разделены\n {len(self.pole_dipole)} - трехэлектродка\n'\
                                          f'{len(self.dipole_dipole)} - дипольная\n'\
                                          f'{len(self.schlumberger)} - шлюмберже')
                         
                 except Exception as e:
-                    self.message_var.set(f'Ошибка при разделении данных: {e}')
+                    self.update_message(f'Ошибка при разделении данных: {e}')
                 
             else:
-                self.message_var.set('Директория не выбрана')
+                self.update_message('Директория не выбрана')
                 
         except Exception as e:
-            self.message_var.set(f'Ошибка при выборе директории: {e}')
+            self.update_message(f'Ошибка при выборе директории: {e}')
             
     
     
@@ -350,7 +365,9 @@ class UI:
     
         # Показываем гистограмму с отфильтрованными данными
         self.show_histogram(self.nested_tab_all, self.array_post_filter, param_index , f'Гистограмма для {selected_param}')
-        #self.show_histogram(self.nested_tab_all, self.array_post_filter, 1, 'RoK')
+        self.update_message(f'Текущее количество строк массива: {len(self.array_post_filter)}')
+        
+        
         
     def reset_filter(self):
         
@@ -362,12 +379,14 @@ class UI:
         self.array_post_filter = self.data
         
         self.show_histogram(self.nested_tab_all, self.array_post_filter, param_index, selected_param)
+        self.update_message(f'Сброс массива, количество строк: {len(self.array_post_filter)}')
         
         
         
     def apply_filter(self):
         if self.array_post_filter:  
             self.data = self.array_post_filter
+            self.update_message(f'Массив обрезан, количество строк: {len(self.data)}')
 
         
     
@@ -386,21 +405,27 @@ class UI:
             array = self.data  # Данные для сохранения
             # Вызываем метод контроллера для сохранения данных
             self.controller.safe_data(path, array, zagolovok_file, a)
-            self.message_var.set(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
+            self.update_message(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
         else:
-            self.message_var.set('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
+            self.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
     
     
     
     
-    def create_settings_tab(self):
+    def create_Komarov_SP_tab(self):
         #Создает вкладку используя код из ui_KomarovSP.py.
-        settings_tab = KSP.komarov_tab(self.notebook)
-        self.notebook.add(settings_tab, text='Комаров ВП')
+        self.notebook.add(KSP.komarov_tab(self.notebook), text='Комаров ВП')
         
         
+
+            
     # Метод для обновления сообщения
     def update_message(self, message):
-        self.message_var.set(message)
+        # Добавляем сообщение в текстовое поле
+        self.message_area.insert(tk.END, message + "\n")
+        # Прокручиваем до конца, чтобы новое сообщение было видно
+        self.message_area.see(tk.END)
+        
+        
     def run(self):
         self.root.mainloop()
