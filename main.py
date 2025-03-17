@@ -26,6 +26,7 @@ if __name__ == "__main__":
     # Обновляем ссылку на контроллер в UI
     ui.controller = controller
     
+
     # Запускаем приложение
     ui.run()
 
