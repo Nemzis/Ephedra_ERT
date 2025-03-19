@@ -82,6 +82,17 @@ class Controller:
     
     
     
+    def processing_xyzrho(self, array, type_array, path):
+        
+        data = dp.Rok_3D2D(array, type_array)
+
+        return ds.REC_standart_ROK(path, data)
+        
+        
+
+    
+    
+    
     
     def safe_data(self, path, array, zagolovok_file, a):
         '''

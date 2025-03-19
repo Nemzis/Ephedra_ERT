@@ -62,7 +62,6 @@ class Komarov_SP:
         a += 1
     
     
-    
         return komarov_body_tab
     
 
@@ -141,11 +140,7 @@ class Komarov_SP:
                     array[i] = list(map(float, array[i]))
                 except ValueError:
                     continue
-            
-            
-    
-
-                
+ 
     
         return array
 

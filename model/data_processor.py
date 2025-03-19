@@ -5,6 +5,7 @@ Created on Mon Mar  3 01:27:38 2025
 @author: Vladimir
 """
 import matplotlib.pyplot as plt
+import math #мат библиотека
 
 
 def separator (data):
@@ -80,7 +81,69 @@ def gistogramma(array, a, title):
     ax.tick_params(axis='both', which='major', labelsize=6)  # Размер шрифта меток
     ax.set_xlabel('Значения', fontsize=6)  # Размер шрифта подписи оси X
     ax.set_ylabel('Частота', fontsize=6)   # Размер шрифта подписи оси Y
-
+    
+    plt.close(fig)
+    
     return fig  # Возвращаем объект Figure
 
+
+
+def Rok_3D2D (array, type_array):
+    #стандартный рассчет Рок для трехэл формирование списка
+    #v 3.0
+    #         Ax   Bx    Mx    Nx   
+    # 0 1    2    3     4     5     6        7         8  9  10    11  12      13  14  15  16  
+    # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
+    
+    Rok_data = []
+    key_M = 0
+    if len(array[0]) > 17:
+        key_M = 1
+
+    for i in range(len(array)):
+        v = array[i][8]
+        a = array[i][9]
+        
+       
+        if type_array == 'Pole-Dipole':
+            #pole-dipole
+            #x = MN/2
+            #z = AO/3
+            x = (array[i][4] + array[i][5])/2
+            y = (array[i][15] + array[i][16])/2
+            z = -((x - array[i][2])**2 + (y - array[i][13])**2)**(0.5)/3
+
+        elif type_array == 'Dipole-Dipole':
+            #dipole-dipole
+            #x = (B+M)/2
+            #z = OO`/2  
+            x = (array[i][3] + array[i][4])/2
+            y = (array[i][14] + array[i][15])/2
+            Ox = (array[i][2] + array[i][3])/2
+            Oy = (array[i][13] + array[i][14])/2
+            Ox2 = (array[i][4] + array[i][5])/2
+            Oy2 = (array[i][15] + array[i][16])/2
+            z = -((Ox - Ox2)**2 + (Oy - Oy2)**2)**(0.5)/2
+            
+        elif type_array == 'Schlumberge':
+            #schlumberger
+            #x = (M+N)/2
+            #z = AB/2
+            x = (array[i][4] + array[i][5])/2
+            y = (array[i][15] + array[i][16])/2
+            z = -((array[i][2] - array[i][3])**2 + (array[i][13] - array[i][14])**2)**(0.5)/2
+        else:
+            pass
+            
+        z = round(z, 3)
+        r = array[i][1]
+        log_r = math.log(r)
+        
+        if key_M == 1:
+            m = array[i][37]
+            Rok_data.append([x, y, z, r, log_r, v, a, m])
+        else:
+            Rok_data.append([x, y, z, r, log_r, v, a])
+
+    return Rok_data
 

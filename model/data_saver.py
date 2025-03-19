@@ -5,6 +5,9 @@ Created on Wed Feb 26 01:50:58 2025
 @author: Vladimir
 """
 
+
+
+
 def REC_in_files_for_INV(path, array, zagolovok_file, a):
     #Путь, массив, заголовок, половина расстояния между электродами
     #формат файла 
@@ -73,5 +76,44 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
         if array[0][2] == '99999.999' or array[0][3] == '99999.999':
             file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
     
-    file.write(str('0\n0\n0\n0\n0'))
+    file.write(str('0\n0\n0\n0\n0\n0'))
     file.close()
+    
+    
+    
+    
+
+
+#запись ROK
+def REC_standart_ROK(path, array):
+    #ver 2.0
+    #массив, путь
+    #файл должен быть подготовлен:
+    # X Y Z R log(R)
+    # X Y Z R log(R) V I 
+    # X Y Z R log(R) V I M
+   
+    if len(array[0]) == 5:
+        file = open(path, "w")
+        file.write(str('X\tY\tZ\tROK\tlog(ROK)\n')) #заголовок
+        for item in array:
+            file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
+                       f'{float(item[3]):.4f}\t{float(item[4]):.4f}\n')
+        file.close()
+    elif len(array[0]) == 7:
+        file = open(path, "w")
+        file.write(str('X\tY\tZ\tROK\tlog(ROK)\tV\tI\n')) #заголовок
+        for item in array:
+            file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
+                       f'{float(item[3]):.4f}\t{float(item[4]):.4f}\t{float(item[5]):.4f}\t'
+                        f'{float(item[6]):.4f}\n')
+        file.close()
+    elif len(array[0]) == 8:
+        file = open(path, "w")
+        file.write(str('X\tY\tZ\tROK\tlog(ROK)\tV\tI\tM\n')) #заголовок
+        for item in array:
+            file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
+                       f'{float(item[3]):.4f}\t{float(item[4]):.4f}\t{float(item[5]):.4f}\t'
+                        f'{float(item[6]):.4f}\t{float(item[7]):.4f}\n')
+        file.close()
+    
