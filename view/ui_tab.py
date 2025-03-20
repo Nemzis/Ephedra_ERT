@@ -5,12 +5,12 @@ Created on Mon Mar 17 01:50:15 2025
 @author: Vladimir
 """
 
-# ui_tab.py
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import ttk, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-#from controller.controller import Controller
+import copy 
 
 
 
@@ -21,6 +21,7 @@ class DataTab:
         self.parent = parent
         self.ui = ui  # Сохраняем ссылку на UI
         self.data = data
+        self.data_recovery = copy.deepcopy(self.data)
         
         self.type_array = type_array
         
@@ -31,26 +32,35 @@ class DataTab:
 
     def create_data_tab(self):
         self.array_post_filter = list()
-        self.data_recovery = self.data
+        
+        
         
         self.body_tab = ttk.Frame(self.parent)
         
 
         w = 20 #общая ширина кнопок
         
-        self.button_safe_all = ttk.Button(self.body_tab, text = 'Сохранить файл (Res3Dinv)', command = self.safe_data)
-        self.button_safe_all.grid(row=0, column=0, pady = 5, padx = 5, sticky='wn')
+        self.button_safe_all = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл (Res3Dinv)', command = self.safe_data)
+        self.button_safe_all.grid(row=0, column=0, pady = 5, padx = 5, sticky='nsew')
+        
 
-        self.button_safe_rho = ttk.Button(self.body_tab, text = 'Сохранить файл XYZR', state='normal', command = self.safe_xyz_rho)
-        self.button_safe_rho.grid(row=1, column=0, pady = 5, padx = 5, sticky='wn')
+        self.button_safe_rho = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл XYZR', state='normal', command = self.safe_xyz_rho)
+        self.button_safe_rho.grid(row=1, column=0, pady = 5, padx = 5, sticky='nsew')
+        
 
         if self.type_array == 'all_data':
             self.button_safe_rho.config(state='disabled')
             
+            
+        open_apply = ttk.Button(self.body_tab, width=25, text='Восстановить исходный\nмассив', command = self.recovery_filter )
+        open_apply.grid(row=2, column=0, padx = 5, pady = 5,  sticky='nsew')
+            
+            
+
        
         # -----------------------------------------------------------
         self.customer_frame = tk.LabelFrame(self.body_tab, text="Сохранение Файла")
-        self.customer_frame.grid(row=2, rowspan = 4, column=0, padx=5, pady=5, sticky="NSEW")
+        self.customer_frame.grid(row=3, rowspan = 4, column=0, padx=5, pady=5, sticky="NSEW")
         
         # Поле ввода для заголовка файла
         label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
@@ -71,7 +81,7 @@ class DataTab:
         
         # -----------------------------------------------------------
         self.customer_frame_filter = tk.LabelFrame(self.body_tab, text="Фильтр по диапазону")
-        self.customer_frame_filter.grid(row=6,rowspan = 8, column=0, padx=10, pady=10, sticky="NSEW")
+        self.customer_frame_filter.grid(row=7,rowspan = 8, column=0, padx=10, pady=10, sticky="NSEW")
         
         label_Rho_min = tk.Label(self.customer_frame_filter, text='Минимум')
         label_Rho_min.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
@@ -94,8 +104,7 @@ class DataTab:
         open_apply = ttk.Button(self.customer_frame_filter, width = w, text='Применить', command = self.apply_filter)
         open_apply.grid(row=6, column=0, padx = 5, pady = 5)
         
-        open_apply = ttk.Button(self.customer_frame_filter, width = w, text='Восстановить\nисходный\nмассив', command = self.recovery_filter )
-        open_apply.grid(row=7, column=0, padx = 5, pady = 5)
+
         
         
         
@@ -109,16 +118,16 @@ class DataTab:
         # Создаём выпадающий список
         if len(self.data[0]) > 17:
             self.param_combobox = ttk.Combobox(self.customer_frame_histogram, values=['Rho', 'V (mV)', 'I (mA)', 'K', 'M'])
-            self.param_combobox.grid(row=0, column=0, padx=5, pady=5, sticky='wn')
+            self.param_combobox.grid(row=1, column=0, padx=5, pady=5, sticky='wn')
             self.param_combobox.current(0)  # Устанавливаем значение по умолчанию (Rho)
         else:
             self.param_combobox = ttk.Combobox(self.customer_frame_histogram, values=['Rho', 'V (mV)', 'I (mA)', 'K'])
-            self.param_combobox.grid(row=0, column=0, padx=5, pady=5, sticky='wn')
+            self.param_combobox.grid(row=1, column=0, padx=5, pady=5, sticky='wn')
             self.param_combobox.current(0)  # Устанавливаем значение по умолчанию (Rho)
         
         # Кнопка для отображения гистограммы
         show_button = ttk.Button(self.customer_frame_histogram, text='Обновить гистограмму', command = self.show_histogram_wrapper)
-        show_button.grid(row=1, column=0, padx=5, pady=5, ipadx=1, ipady=0, sticky='wn')
+        show_button.grid(row=2, column=0, padx=5, pady=5, ipadx=1, ipady=0, sticky='wn')
         
         
         # -----------------------------------------------------------
@@ -129,7 +138,7 @@ class DataTab:
         self.entry_step = tk.Entry(self.customer_frame_step, width = w)
         self.entry_step.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
         
-        open_step = ttk.Button(self.customer_frame_step, width = w, text='Умножить')
+        open_step = ttk.Button(self.customer_frame_step, width = w, text='Умножить', command = self.multiply_array)
         open_step .grid(row=1, column=0, padx = 5, pady = 5)
 
         
@@ -139,6 +148,23 @@ class DataTab:
     
 
 
+    def multiply_array(self):
+        
+        # Получаем выбранный параметр
+        selected_param = self.param_combobox.get()
+        # Определяем индекс параметра
+        param_index = self.get_param_index(selected_param)
+        
+        c =  self.entry_step.get()
+        
+        if not self.array_post_filter:  # Проверяем, пуст ли список
+            array = self.data
+        else:
+            array = self.array_post_filter
+        
+        
+        self.array_post_filter = self.controller.multiply(array, c)
+        self.show_histogram(self.body_tab, self.array_post_filter, param_index, f'Гистограмма для {selected_param}')
     
     #Гистрограмма -----------------------------------------------
     # -----------------------------------------------------------
@@ -304,8 +330,7 @@ class DataTab:
         else:
             self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
         
-        
-        pass
+
     
     
     

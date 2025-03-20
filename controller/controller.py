@@ -83,21 +83,27 @@ class Controller:
     
     
     def processing_xyzrho(self, array, type_array, path):
-        
         data = dp.Rok_3D2D(array, type_array)
-
         return ds.REC_standart_ROK(path, data)
         
         
+        #multiply_data
+        
+        
+        
+    def multiply(self, array, a):
+        
+        array = dp.multiply_data(array, a)
+        
+        return array
+
+
+
+
 
     
-    
-    
-    
     def safe_data(self, path, array, zagolovok_file, a):
-        '''
-        Возвращает гистограмму для данных.
-        '''
+        #Возвращает гистограмму для данных.
         return ds.REC_in_files_for_INV(path, array, zagolovok_file, a)
 
 
