@@ -150,22 +150,37 @@ def Rok_3D2D (array, type_array):
 
 
 
-def multiply_data(array, a):
+def multiply_data(array, x, y, r):
 
-
-    a = float(a)
-    if a != 0:
-        multiply_id = [1, 2, 3, 4, 5, 13, 14, 15, 16] 
+    if x != 0 and x != '':
+        x = float(x)
+        multiply_id = [2, 3, 4, 5] 
         for row in array:
             for m in multiply_id:
-                if row[m] != '99999.999' or row[m] != 99999.999:
-                    row[m] = row[m] * a
+                if row[m] != '99999.999' and row[m] != 99999.999:
+                    row[m] = row[m] * x
+                else:
+                    continue                
+                
+    if y != 0 and y != '':
+        y = float(y)
+        multiply_id_2 = [13, 14, 15, 16] 
+        for row in array:
+            for m in multiply_id_2:
+                if row[m] != '99999.999' and row[m] != 99999.999:
+                    row[m] = row[m] * y
                 else:
                     continue
+                
+                
+    if r != 0 and r != '':
+        r = float(r)
+        for row in array:
+            row[1] = row[1] * r
+              
+                
         return array  
     
-
-
 
 
 

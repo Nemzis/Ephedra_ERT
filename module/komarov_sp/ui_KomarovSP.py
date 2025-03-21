@@ -13,157 +13,224 @@ Created on Tue Mar  4 02:19:56 2025
 # 0 1   2     3     4     5     6        7         8  9  10    11  12      13  14  15  16  
 # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
 
-# ui_KomarovSP.py
+
 import tkinter as tk
 from tkinter import ttk
-
 from tkinter import filedialog
 import json
-import os #работа с файлами
+import os
+
 
 
 class Komarov_SP:
-    
     def __init__(self, parent, ui):
-        self.parent = parent
+        self.parent = parent  # Главное окно
         self.ui = ui  # Сохраняем ссылку на UI
+
+
+        # Инициализация переменных для чекбоксов
+        self.rksp = tk.IntVar()
+        self.sp100 = tk.IntVar()
+
+        # Загружаем состояния чекбоксов
+        self.state = self.load_state()
+        self.rksp.set(self.state.get('check1', 0))  # По умолчанию 0, если ключа нет
+        self.sp100.set(self.state.get('check2', 0))  # По умолчанию 0, если ключа нет
+
+        # Создаем интерфейс
         self.frame = self.create_komarov_tab()
 
+
+
     def create_komarov_tab(self):
-        """
-        Создает содержимое вкладки Комаров ВП.
-        """
-        komarov_body_tab = ttk.Frame(self.parent)
-        
-        # Добавляем содержимое вкладки
-        
+        self.komarov_body_tab = ttk.Frame(self.parent)
+
         a = 0
         w = 20
-        
-        label = tk.Label(komarov_body_tab, text='Вызванная поляризация методом Комарова (V 1.0 2025)')
+
+        label = tk.Label(self.komarov_body_tab, text='Вызванная поляризация методом Комарова (V 1.0 2025) (В разработке)')
         label.grid(row=a, column=0, sticky='nw', padx=5, pady=5)
         a += 1
-        
-        button_safe_file = ttk.Button(komarov_body_tab, width = w, text='Сохранить')    
+
+        button_safe_file = ttk.Button(self.komarov_body_tab, width=w, text='Сохранить')
         button_safe_file.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
         a += 1
-    
-        button_open_file_1 = ttk.Button(komarov_body_tab, width = w, text='Низкая частота', command=self.array_low)    
+
+        button_open_file_1 = ttk.Button(self.komarov_body_tab, width=w, text='Низкая частота', command=self.array_low)
         button_open_file_1.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
         a += 1
-        
-        button_open_file_2 = ttk.Button(komarov_body_tab, width = w, text='Высокая частота', command=self.array_high)    
+
+        button_open_file_2 = ttk.Button(self.komarov_body_tab, width=w, text='Высокая частота', command=self.array_high)
         button_open_file_2.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
         a += 1
-        
-        
-        button_rasschet = ttk.Button(komarov_body_tab, width = w, text='Рассчитать')    
-        button_rasschet.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
+
+        button_rasschet = ttk.Button(self.komarov_body_tab, width=w, text='Рассчитать')
+        button_rasschet.grid(row=a, column=0, ipadx=1, ipady=0, padx=0, pady=1, sticky='nw')
         a += 1
+
+        open_button_ask = ttk.Button(self.komarov_body_tab, text='?', command=self.helper)
+        open_button_ask.grid(row=a, column=0, ipadx=0, ipady=0, padx=0, pady=1, sticky='nw')
+        a += 1
+        
+        open_button_safe_chek = ttk.Button(self.komarov_body_tab, text='Cохранить настройки модуля', command=self.on_closing)
+        open_button_safe_chek.grid(row=a, column=0, ipadx=0, ipady=0, padx=0, pady=1, sticky='nw')
+        
+        
+
+        # Создаем чекпоинты
+        checkbutton = tk.Checkbutton(
+            self.komarov_body_tab,
+            text='Сохранить файл КС и ВП',
+            variable=self.rksp
+        )
+        checkbutton.grid(row=9, column=0, padx=0, pady=0, sticky='nw')
+
+        checkbutton_100 = tk.Checkbutton(
+            self.komarov_body_tab,
+            text='+100 к ВП',
+            variable=self.sp100
+        )
+        checkbutton_100.grid(row=10, column=0, padx=0, pady=0, sticky='nw')
+
+        return self.komarov_body_tab
     
     
-        return komarov_body_tab
     
-
-    def get_frame(self):
-        """
-        Возвращает фрейм вкладки.
-        """
-        return self.frame
-
-
-
+    
     def array_low(self):
         filetypes = [
             ('Все форматы', '*'),
-            ('Текстовые файлы', '*.txt'), 
+            ('Текстовые файлы', '*.txt'),
             ('Res2Dinv', '*.dat')
         ]
-        
-        # Открываем диалоговое окно для выбора файла
-        filepath = filedialog.askopenfilename (filetypes=filetypes)
-        
-        
+    
+        filepath = filedialog.askopenfilename(filetypes=filetypes)
+    
         try:
             self.array_low = self.read_array_RES(filepath)
             self.ui.update_message(f'Файл успешно загружен: {filepath}')
         except Exception as e:
             self.ui.update_message(f'Ошибка при выборе файла: {e}')
-
+            
 
     def array_high(self):
         filetypes = [
             ('Все форматы', '*'),
-            ('Текстовые файлы', '*.txt'), 
+            ('Текстовые файлы', '*.txt'),
             ('Res2Dinv', '*.dat')
         ]
-        
-        # Открываем диалоговое окно для выбора файла
-        filepath = filedialog.askopenfilename (filetypes=filetypes)
-        
+    
+        filepath = filedialog.askopenfilename(filetypes=filetypes)
+    
         try:
             self.array_high = self.read_array_RES(filepath)
             self.ui.update_message(f'Файл успешно загружен: {filepath}')
         except Exception as e:
             self.ui.update_message(f'Ошибка при выборе файла: {e}')
-
-
-
-
+            
+            
 
     @staticmethod
     def read_array_RES(path):
-
         array = list()
-        
+    
         with open(path, 'r') as f:
-            array = f.readlines() 
-
+            array = f.readlines()
+    
         file_extension = os.path.splitext(path)[1]
-        
+    
         if file_extension == '.txt':
             for i in range(len(array)):
                 array[i] = array[i].replace('\n', '')
                 array[i] = array[i].split('\t')
-                
+    
                 try:
                     array[i] = list(map(float, array[i]))
                 except ValueError:
                     continue
-
+    
         elif file_extension == '.dat':
             for i in range(len(array)):
                 array[i] = array[i].replace('\n', '')
                 array[i] = array[i].split(' ')
-                
+    
                 try:
                     array[i] = list(map(float, array[i]))
                 except ValueError:
                     continue
- 
     
         return array
-
-
+    
+    
 
     
     
+
+    def save_state(self, state):
+        """Сохраняет состояния чекбоксов в файл."""
+        try:
+            settings_dir = 'module/komarov_sp'
+            if not os.path.exists(settings_dir):
+                os.makedirs(settings_dir)  # Создаем каталог, если его нет
+
+            settings_path = os.path.join(settings_dir, 'settings.json')
+            with open(settings_path, 'w', encoding='utf-8') as file:
+                json.dump(state, file, indent=4)
+            print("Состояния успешно сохранены.")
+        except Exception as e:
+            print(f"Ошибка при сохранении состояний: {e}")
+            
+            
+
+    def load_state(self):
+        """Загружает состояния чекбоксов из файла."""
+        try:
+            settings_path = os.path.join('module/komarov_sp', 'settings.json')
+            if os.path.exists(settings_path):
+                with open(settings_path, 'r', encoding='utf-8') as file:
+                    return json.load(file)
+            else:
+                print("Файл настроек не найден, используются значения по умолчанию.")
+                return {'check1': 0, 'check2': 0}
+        except Exception as e:
+            print(f"Ошибка при загрузке состояний: {e}")
+            return {'check1': 0, 'check2': 0}
+
+
+
+
+    def on_closing(self):
+        """Обрабатывает закрытие окна."""
+        self.state = {'check1': self.rksp.get(), 'check2': self.sp100.get()}
+        self.save_state(self.state)
+        #self.parent.destroy()  # Закрываем главное окно
+        
+        
+        
+        
+        
+    def helper(self):
+        with open('module/komarov_sp/helper_Komarov.txt', 'r', encoding='utf-8') as file:
+            file_content = file.read()
+
+        new_window = tk.Toplevel(self.komarov_body_tab)
+        new_window.title('Helper')
+        new_window.geometry('650x400')
+
+        text_widget = tk.Text(new_window, wrap='word', font=('Arial', 10))
+        text_widget.pack(fill='both', expand=True, padx=10, pady=10)
+
+        text_widget.insert('1.0', file_content)
+        text_widget.config(state='disabled')
+        
+        
+    def get_frame(self):
+        return self.frame
     
 '''
 
 
-# Функция для сохранения состояния чекпоинтов
-def save_state(state):
-    with open('settings.json', 'w', encoding='utf-8') as file:
-        json.dump(state, file)  # Сохраняем состояние в JSON-файл
 
-# Функция для загрузки состояния чекпоинтов
-def load_state():
-    try:
-        with open('settings.json', 'r', encoding='utf-8') as file:
-            return json.load(file)  # Читаем состояние из JSON-файла
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {'check1': 0, 'check2': 0}  # Возвращаем значения по умолчанию
 
 
 
@@ -398,40 +465,18 @@ def save_file():
 
 
 
-def helper():
-    
-    with open('text_helper.txt', 'r', encoding='utf-8') as file:
-        file_content = file.read()
-        
-    # Создаем новое окно
-    new_window = tk.Toplevel(root)
-    new_window.title('Helper')
-    new_window.geometry('650x400')
-
-    # Создаем текстовый виджет
-    text_widget = tk.Text(new_window, wrap='word', font=('Arial', 10))
-    text_widget.pack(fill='both', expand=True, padx=10, pady=10)
-
-    # Вставляем текст из файла
-    text_widget.insert('1.0', file_content)
-
-    # Отключаем возможность редактирования
-    text_widget.config(state='disabled')
 
 
 
 
 
-# Загружаем состояние
-state = load_state()
 
-rksp = tk.IntVar(value=state['check1'])
-sp100 = tk.IntVar(value=state['check2'])
+
 
 
 
 # Создаем и размещаем метки
-label = tk.Label(root, text='Сначала выбираем НИЗКУЮ частоту, потом ВЫСОКУЮ', justify='left')
+
 label_3 = tk.Label(root, text='File: ')
 label_4 = tk.Label(root, text='File: ')
 
@@ -446,42 +491,13 @@ label_4.grid(column=0, row=3, sticky=NW)
 
 
 
-# Создаем чекпоинты
-checkbutton = tk.Checkbutton(
-    root,
-    text='Сохранить файл КС и ВП',
-    variable=rksp  # Привязываем переменную к чекпоинту
-)
 
 
-checkbutton_100 = tk.Checkbutton(
-    root,
-    text='+100 к ВП',
-    variable=sp100  # Привязываем переменную к чекпоинту
-)
-checkbutton_100.grid(column=0, row=9, padx=180, pady=0, sticky=NW)
-checkbutton.grid(column=0, row=9, padx=0, pady=0, sticky=NW)  
 
 
-# Создаем кнопки
-a = 0
 
 
-open_button_4 = ttk.Button(root, text='?', command = helper)
-open_button_4.grid(column=1, row=0, ipadx=0, ipady=0, padx=20, pady=0, sticky=NE)
 
-open_button_5 = ttk.Button(root, text='Сохранить', state='disabled', command = save_file)
-open_button_5.grid(column=1, row=1, ipadx=0, ipady=0, padx=20, pady=0, sticky=NE)
-
-
-# Функция, которая вызывается при закрытии окна
-def on_closing():
-    state = {'check1': rksp.get(), 'check2': sp100.get()}  # Сохраняем состояния
-    save_state(state)  # Перезаписываем файл
-    root.destroy()
-
-# Привязываем событие закрытия окна к функции on_closing
-root.protocol('WM_DELETE_WINDOW', on_closing)
 
 
 '''

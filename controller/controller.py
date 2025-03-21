@@ -91,9 +91,9 @@ class Controller:
         
         
         
-    def multiply(self, array, a):
+    def multiply(self, array, x, y, r):
         
-        array = dp.multiply_data(array, a)
+        array = dp.multiply_data(array, x, y, r)
         
         return array
 

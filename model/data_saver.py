@@ -39,11 +39,21 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
         all_Y.append(y2)
         all_Y.append(y2 + a)
         
+        
     all_X = sorted(list(dict.fromkeys(all_X)))
     all_Y = sorted(list(dict.fromkeys(all_Y)))
     
     del all_X[len(all_X)-1]
     del all_Y[len(all_Y)-1]
+    
+    
+    for i in range(len(all_X)):
+        all_X[i] = round(all_X[i], 2)
+        
+        
+    for i in range(len(all_Y)):
+        all_Y[i] = round(all_Y[i], 2)
+
 
     
     file = open(path, "w")

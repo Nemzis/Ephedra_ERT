@@ -10,7 +10,7 @@ from tkinter import ttk, filedialog
 from view.ui_tab import DataTab  # Импортируем класс DataTab для вкладок
 
 
-from module.ui_KomarovSP import Komarov_SP
+from module.komarov_sp.ui_KomarovSP import Komarov_SP
 
 
 class UI:
@@ -43,11 +43,20 @@ class UI:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.message_area.config(yscrollcommand=scrollbar.set)
         
-    
+
         
         # Создаем вкладку Комаров ВП
         komarov_tab_instance = Komarov_SP(self.notebook, self)  # Передаем self (UI) в Komarov_SP
         self.notebook.add(komarov_tab_instance.get_frame(), text='Комаров ВП')
+  
+    
+  
+    
+  
+
+    
+  
+    
   
         
     def create_main_tab(self): 

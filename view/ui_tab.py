@@ -52,15 +52,18 @@ class DataTab:
             self.button_safe_rho.config(state='disabled')
             
             
+        self.button_safe_rho = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл PyGimli', state='normal')
+        self.button_safe_rho.grid(row=2, column=0, pady = 5, padx = 5, sticky='nsew')
+            
         open_apply = ttk.Button(self.body_tab, width=25, text='Восстановить исходный\nмассив', command = self.recovery_filter )
-        open_apply.grid(row=2, column=0, padx = 5, pady = 5,  sticky='nsew')
+        open_apply.grid(row=3, column=0, padx = 5, pady = 5,  sticky='nsew')
             
             
 
        
         # -----------------------------------------------------------
         self.customer_frame = tk.LabelFrame(self.body_tab, text="Сохранение Файла")
-        self.customer_frame.grid(row=3, rowspan = 4, column=0, padx=5, pady=5, sticky="NSEW")
+        self.customer_frame.grid(row=4, rowspan = 4, column=0, padx=5, pady=5, sticky="NSEW")
         
         # Поле ввода для заголовка файла
         label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
@@ -81,7 +84,7 @@ class DataTab:
         
         # -----------------------------------------------------------
         self.customer_frame_filter = tk.LabelFrame(self.body_tab, text="Фильтр по диапазону")
-        self.customer_frame_filter.grid(row=7,rowspan = 8, column=0, padx=10, pady=10, sticky="NSEW")
+        self.customer_frame_filter.grid(row=8,rowspan = 8, column=0, padx=10, pady=10, sticky="NSEW")
         
         label_Rho_min = tk.Label(self.customer_frame_filter, text='Минимум')
         label_Rho_min.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
@@ -132,14 +135,21 @@ class DataTab:
         
         # -----------------------------------------------------------
         #исправляем шаг
-        self.customer_frame_step = tk.LabelFrame(self.body_tab, text="Множитель координат")
+        self.customer_frame_step = tk.LabelFrame(self.body_tab, text="Множитель X Y R")
         self.customer_frame_step.grid(row=0, column=2, rowspan = 2, padx=10, pady=10, sticky="NSEW")
         
-        self.entry_step = tk.Entry(self.customer_frame_step, width = w)
-        self.entry_step.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
+        self.entry_step_x = tk.Entry(self.customer_frame_step, width = 6)
+        self.entry_step_x.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
+        
+        self.entry_step_y = tk.Entry(self.customer_frame_step, width = 6)
+        self.entry_step_y.grid(row=0, column=1, sticky='wn', pady = 5, padx = 5)
+        
+        self.entry_step_r = tk.Entry(self.customer_frame_step, width = 6)
+        self.entry_step_r.grid(row=0, column=2, sticky='wn', pady = 5, padx = 5)
+        
         
         open_step = ttk.Button(self.customer_frame_step, width = w, text='Умножить', command = self.multiply_array)
-        open_step .grid(row=1, column=0, padx = 5, pady = 5)
+        open_step .grid(row=1, column=0, padx = 5, pady = 5, columnspan=3)
 
         
 
@@ -155,16 +165,21 @@ class DataTab:
         # Определяем индекс параметра
         param_index = self.get_param_index(selected_param)
         
-        c =  self.entry_step.get()
+        x = self.entry_step_x.get()
+        y = self.entry_step_y.get()
+        r = self.entry_step_r.get()
+        
         
         if not self.array_post_filter:  # Проверяем, пуст ли список
             array = self.data
         else:
             array = self.array_post_filter
         
-        
-        self.array_post_filter = self.controller.multiply(array, c)
-        self.show_histogram(self.body_tab, self.array_post_filter, param_index, f'Гистограмма для {selected_param}')
+        if x == '' and y == '' and r == '':
+            pass
+        else:
+            self.array_post_filter = self.controller.multiply(array, x, y, r)
+            self.show_histogram(self.body_tab, self.array_post_filter, param_index, f'Гистограмма для {selected_param}')
     
     #Гистрограмма -----------------------------------------------
     # -----------------------------------------------------------
@@ -298,6 +313,10 @@ class DataTab:
         self.array_post_filter = list()
         self.entry_Rho_min.delete(0, tk.END)
         self.entry_Rho_max.delete(0, tk.END)
+        
+        self.entry_step_x.delete(0, tk.END)
+        self.entry_step_y.delete(0, tk.END)
+        self.entry_step_r.delete(0, tk.END)
 
         
         self.show_histogram(self.body_tab, self.data, param_index, selected_param)
