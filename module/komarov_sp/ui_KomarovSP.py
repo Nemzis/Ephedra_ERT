@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Tue Mar  4 02:19:56 2025
 
 @author: Vladimir
-"""
+'''
 
 
 #       (M)            
@@ -12,7 +12,6 @@ Created on Tue Mar  4 02:19:56 2025
 
 # 0 1   2     3     4     5     6        7         8  9  10    11  12      13  14  15  16  
 # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
-
 
 import tkinter as tk
 from tkinter import ttk
@@ -48,23 +47,23 @@ class Komarov_SP:
         a = 0
         w = 20
 
-        label = tk.Label(self.komarov_body_tab, text='Вызванная поляризация методом Комарова (V 1.0 2025) (В разработке)')
+        label = tk.Label(self.komarov_body_tab, text='Вызванная поляризация методом Комарова (V 1.2.2 2025) (В разработке)')
         label.grid(row=a, column=0, sticky='nw', padx=5, pady=5)
         a += 1
 
-        button_safe_file = ttk.Button(self.komarov_body_tab, width=w, text='Сохранить')
-        button_safe_file.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
+        button_safe_file = ttk.Button(self.komarov_body_tab, text='Сохранить')
+        button_safe_file.grid(row=a, column=0, sticky='nw', ipadx=1, ipady=0, padx=1, pady=1)
         a += 1
 
-        button_open_file_1 = ttk.Button(self.komarov_body_tab, width=w, text='Низкая частота', command=self.array_low)
+        button_open_file_1 = ttk.Button(self.komarov_body_tab, text='Низкая частота', command=self.array_low)
         button_open_file_1.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
         a += 1
 
-        button_open_file_2 = ttk.Button(self.komarov_body_tab, width=w, text='Высокая частота', command=self.array_high)
+        button_open_file_2 = ttk.Button(self.komarov_body_tab, text='Высокая частота', command=self.array_high)
         button_open_file_2.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
         a += 1
 
-        button_rasschet = ttk.Button(self.komarov_body_tab, width=w, text='Рассчитать')
+        button_rasschet = ttk.Button(self.komarov_body_tab, text='Рассчитать')
         button_rasschet.grid(row=a, column=0, ipadx=1, ipady=0, padx=0, pady=1, sticky='nw')
         a += 1
 
@@ -72,7 +71,7 @@ class Komarov_SP:
         open_button_ask.grid(row=a, column=0, ipadx=0, ipady=0, padx=0, pady=1, sticky='nw')
         a += 1
         
-        open_button_safe_chek = ttk.Button(self.komarov_body_tab, text='Cохранить настройки модуля', command=self.on_closing)
+        open_button_safe_chek = ttk.Button(self.komarov_body_tab,  text='Cохранить настройки модуля', command=self.on_closing)
         open_button_safe_chek.grid(row=a, column=0, ipadx=0, ipady=0, padx=0, pady=1, sticky='nw')
         
         
@@ -94,6 +93,9 @@ class Komarov_SP:
 
         return self.komarov_body_tab
     
+    
+    def get_frame(self):
+        return self.frame
     
     
     
@@ -163,11 +165,9 @@ class Komarov_SP:
     
     
 
-    
-    
 
     def save_state(self, state):
-        """Сохраняет состояния чекбоксов в файл."""
+        '''Сохраняет состояния чекбоксов в файл.'''
         try:
             settings_dir = 'module/komarov_sp'
             if not os.path.exists(settings_dir):
@@ -176,31 +176,31 @@ class Komarov_SP:
             settings_path = os.path.join(settings_dir, 'settings.json')
             with open(settings_path, 'w', encoding='utf-8') as file:
                 json.dump(state, file, indent=4)
-            print("Состояния успешно сохранены.")
+            print('Состояния успешно сохранены.')
         except Exception as e:
-            print(f"Ошибка при сохранении состояний: {e}")
+            print(f'Ошибка при сохранении состояний: {e}')
             
             
 
     def load_state(self):
-        """Загружает состояния чекбоксов из файла."""
+        '''Загружает состояния чекбоксов из файла.'''
         try:
             settings_path = os.path.join('module/komarov_sp', 'settings.json')
             if os.path.exists(settings_path):
                 with open(settings_path, 'r', encoding='utf-8') as file:
                     return json.load(file)
             else:
-                print("Файл настроек не найден, используются значения по умолчанию.")
+                print('Файл настроек не найден, используются значения по умолчанию.')
                 return {'check1': 0, 'check2': 0}
         except Exception as e:
-            print(f"Ошибка при загрузке состояний: {e}")
+            print(f'Ошибка при загрузке состояний: {e}')
             return {'check1': 0, 'check2': 0}
 
 
 
 
     def on_closing(self):
-        """Обрабатывает закрытие окна."""
+        '''Обрабатывает закрытие окна.'''
         self.state = {'check1': self.rksp.get(), 'check2': self.sp100.get()}
         self.save_state(self.state)
         #self.parent.destroy()  # Закрываем главное окно
@@ -224,8 +224,7 @@ class Komarov_SP:
         text_widget.config(state='disabled')
         
         
-    def get_frame(self):
-        return self.frame
+
     
 '''
 

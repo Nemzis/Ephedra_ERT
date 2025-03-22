@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Mon Mar 17 01:50:15 2025
 
 @author: Vladimir
-"""
+'''
 
 
 import tkinter as tk
@@ -24,16 +24,15 @@ class DataTab:
         self.data_recovery = copy.deepcopy(self.data)
         
         self.type_array = type_array
-        
+        self.array_post_filter = list()
         #эта хрень должна быть последней
         self.frame = self.create_data_tab()
 
         
 
     def create_data_tab(self):
-        self.array_post_filter = list()
         
-        
+
         
         self.body_tab = ttk.Frame(self.parent)
         
@@ -62,8 +61,8 @@ class DataTab:
 
        
         # -----------------------------------------------------------
-        self.customer_frame = tk.LabelFrame(self.body_tab, text="Сохранение Файла")
-        self.customer_frame.grid(row=4, rowspan = 4, column=0, padx=5, pady=5, sticky="NSEW")
+        self.customer_frame = tk.LabelFrame(self.body_tab, text='Сохранение Файла')
+        self.customer_frame.grid(row=4, rowspan = 4, column=0, padx=5, pady=5, sticky='nsew')
         
         # Поле ввода для заголовка файла
         label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
@@ -79,33 +78,32 @@ class DataTab:
 
         self.entry_a = tk.Entry(self.customer_frame, width=15)
         self.entry_a.grid(row=3, column=0, sticky='wn', pady = 5, padx = 5)
-        self.entry_a.insert(0, '0.02')
         
         
         # -----------------------------------------------------------
-        self.customer_frame_filter = tk.LabelFrame(self.body_tab, text="Фильтр по диапазону")
-        self.customer_frame_filter.grid(row=8,rowspan = 8, column=0, padx=10, pady=10, sticky="NSEW")
+        self.customer_frame_filter = tk.LabelFrame(self.body_tab, text='Фильтр по диапазону')
+        self.customer_frame_filter.grid(row=8, column=0, rowspan = 8, padx=10, pady=10, sticky='nsew')
         
         label_Rho_min = tk.Label(self.customer_frame_filter, text='Минимум')
-        label_Rho_min.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
+        label_Rho_min.grid(row=0, column=0, sticky='nsew', pady = 5, padx = 5)
         
         self.entry_Rho_min = tk.Entry(self.customer_frame_filter, width=10)
-        self.entry_Rho_min.grid(row=1, column=0, sticky='wn', pady = 5, padx = 5)
+        self.entry_Rho_min.grid(row=1, column=0, sticky='nsew', pady = 5, padx = 5)
         
         label_Rho_max = tk.Label(self.customer_frame_filter, text='Максимум')
-        label_Rho_max.grid(row=2, column=0, sticky='wn', pady = 5, padx = 5)
+        label_Rho_max.grid(row=2, column=0, sticky='nsew', pady = 5, padx = 5)
         
         self.entry_Rho_max = tk.Entry(self.customer_frame_filter, width=10)
-        self.entry_Rho_max.grid(row=3, column=0, sticky='wn', pady = 5, padx = 5)
+        self.entry_Rho_max.grid(row=3, column=0, sticky='nsew', pady = 5, padx = 5)
         
         open_rasschet = ttk.Button(self.customer_frame_filter, width = w, text='Рассчитать', command = self.filter_data)
-        open_rasschet.grid(row=4, column=0, padx = 5, pady = 5)
+        open_rasschet.grid(row=4, column=0, padx = 5, pady = 5, sticky='nsew')
         
         open_sbros = ttk.Button(self.customer_frame_filter, width = w, text='Сбросить', command = self.reset_filter)
-        open_sbros.grid(row=5, column=0, padx = 5, pady = 5)
+        open_sbros.grid(row=5, column=0, padx = 5, pady = 5, sticky='nsew')
         
         open_apply = ttk.Button(self.customer_frame_filter, width = w, text='Применить', command = self.apply_filter)
-        open_apply.grid(row=6, column=0, padx = 5, pady = 5)
+        open_apply.grid(row=6, column=0, padx = 5, pady = 5, sticky='nsew')
         
 
         
@@ -115,8 +113,8 @@ class DataTab:
         #Гистограмма 
         self.show_histogram(self.body_tab, self.data, 1, 'Rho')
         
-        self.customer_frame_histogram = tk.LabelFrame(self.body_tab, text="Управление Гистрограммой")
-        self.customer_frame_histogram.grid(row=0, column=1, rowspan = 2, padx=10, pady=10, sticky="NSEW")
+        self.customer_frame_histogram = tk.LabelFrame(self.body_tab, text='Управление гистрограммой')
+        self.customer_frame_histogram.grid(row=0, column=1, rowspan = 2, padx=10, pady=10, sticky='nsew')
         
         # Создаём выпадающий список
         if len(self.data[0]) > 17:
@@ -135,8 +133,8 @@ class DataTab:
         
         # -----------------------------------------------------------
         #исправляем шаг
-        self.customer_frame_step = tk.LabelFrame(self.body_tab, text="Множитель X Y R")
-        self.customer_frame_step.grid(row=0, column=2, rowspan = 2, padx=10, pady=10, sticky="NSEW")
+        self.customer_frame_step = tk.LabelFrame(self.body_tab, text='Множитель X Y R')
+        self.customer_frame_step.grid(row=0, column=2, rowspan = 2, padx=10, pady=10, sticky='nsew')
         
         self.entry_step_x = tk.Entry(self.customer_frame_step, width = 6)
         self.entry_step_x.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
@@ -149,10 +147,26 @@ class DataTab:
         
         
         open_step = ttk.Button(self.customer_frame_step, width = w, text='Умножить', command = self.multiply_array)
-        open_step .grid(row=1, column=0, padx = 5, pady = 5, columnspan=3)
-
+        open_step .grid(row=1, column=0, padx=5, pady=5, ipadx=1, ipady=0, sticky='nsew', columnspan = 3)
         
 
+        # -----------------------------------------------------------
+        #график
+        
+        self.customer_frame_plot = tk.LabelFrame(self.body_tab, text='Управление графиком')
+        self.customer_frame_plot.grid(row=0, column=4, rowspan = 2, padx=10, pady=10, sticky='nsew')
+        
+
+        self.param_plot = ttk.Combobox(self.customer_frame_plot, values=['A', 'B', 'M', 'N', 'Rho(Omm)/V(mV)'])
+        self.param_plot.grid(row=0, column=0, padx=5, pady=5, sticky='wn')
+        self.param_plot.current(0)  # Устанавливаем значение по умолчанию (Rho)
+        
+        # Кнопка для отображения гистограммы
+        show_button = ttk.Button(self.customer_frame_plot, text='Обновить график', command=self.show_plot_wrapper)
+        show_button.grid(row=1, column=0, padx=5, pady=5, ipadx=1, ipady=0, sticky='nsew')
+        
+        
+        
 
         return self.body_tab
     
@@ -191,6 +205,9 @@ class DataTab:
         selected_param = self.param_combobox.get()
         # Определяем индекс параметра
         param_index = self.get_param_index(selected_param)
+        
+        self.entry_Rho_min.delete(0, tk.END)
+        self.entry_Rho_max.delete(0, tk.END)
 
         # Вызываем функцию show_histogram
         self.show_histogram(self.body_tab, self.data, param_index, f'Гистограмма для {selected_param}')
@@ -236,8 +253,8 @@ class DataTab:
                 widget.destroy()
         
         # Создаём фрейм для гистограммы
-        histogram_frame = tk.Frame(parent)
-        histogram_frame.grid(row=2, column=1, columnspan=50, rowspan = 50, sticky='nsew', padx=5, pady=5)
+        self.histogram_frame = tk.Frame(parent)
+        self.histogram_frame.grid(row=2, column=1, columnspan=50, rowspan = 50, sticky='nsew', padx=5, pady=5)
 
         # Получаем гистограмму от контроллера
         fig = self.controller.get_histogram(data, n, title)
@@ -250,10 +267,61 @@ class DataTab:
         fig.tight_layout()  # Вызываем после изменения размера
 
         # Встраиваем гистограмму в интерфейс
-        canvas = FigureCanvasTkAgg(fig, master=histogram_frame)
+        canvas = FigureCanvasTkAgg(fig, master=self.histogram_frame)
         canvas.draw()
         canvas.get_tk_widget().grid(row=0, column=0, sticky='nsew')
         
+        
+        
+
+    def show_plot_wrapper(self):
+        if self.param_plot.get() == 'A':
+            a = 2
+            b = 13
+        elif self.param_plot.get() == 'B':
+            a = 3
+            b = 14
+        elif self.param_plot.get() == 'M':
+            a = 4
+            b = 15
+        elif self.param_plot.get() == 'N':
+            a = 5
+            b = 16
+        elif self.param_plot.get() == 'Rho(Omm)/V(mV)':
+            a = 1
+            b = 8
+
+
+        # Вызываем функцию show_histogram
+        self.show_plot(self.histogram_frame, self.data, a, b)
+
+
+    def show_plot(self, parent, data, a, b):
+        
+
+        # Очищаем фрейм перед созданием нового графика
+        for widget in parent.winfo_children():
+            widget.destroy()
+
+        # Создаём фрейм для графика
+        plot_frame = tk.Frame(parent)
+        plot_frame.grid(row=2, column=1, columnspan=50, rowspan=50, sticky='nsew', padx=5, pady=5)
+
+        # Получаем график от контроллера
+        fig = self.controller.get_plot(data, a, b)
+
+        if fig is None:
+            return  # Если график не создан, выходим
+
+        
+        
+        # Встраиваем график в интерфейс
+        canvas = FigureCanvasTkAgg(fig, master=plot_frame)
+        canvas.draw()
+        canvas.get_tk_widget().grid(row=0, column=0, sticky='nsew')
+
+        plot_frame.update_idletasks()
+
     
     # -----------------------------------------------------------
     #Фильтр------------------------------------------------------
@@ -277,7 +345,7 @@ class DataTab:
     
         # Показываем гистограмму с отфильтрованными данными
         self.show_histogram(self.body_tab, self.array_post_filter, param_index , f'Гистограмма для {selected_param}')
-        self.ui.update_message(f'Текущее количество строк массива: {len(self.array_post_filter)}')
+        self.ui.update_message(f'Текущее количество строк: {len(self.array_post_filter)}')
         
         
         
@@ -291,7 +359,7 @@ class DataTab:
         self.array_post_filter = self.data
         
         self.show_histogram(self.body_tab, self.array_post_filter, param_index, selected_param)
-        self.ui.update_message(f'Сброс массива, количество строк: {len(self.array_post_filter)}')
+        self.ui.update_message(f'Сброс, количество строк: {len(self.array_post_filter)}')
         
         
         
@@ -362,27 +430,31 @@ class DataTab:
     def safe_data(self):
         # Получаем значения из полей ввода
         zagolovok_file = self.entry_zagolovok.get()  # Заголовок файла
-        a = float(self.entry_a.get())  # Параметр a
-        #Открываем диалоговое окно для выбора места сохранения
-        path = filedialog.asksaveasfilename(
-            defaultextension='.dat', # Автоматически добавляет .dat, если пользователь не указал расширение
-            filetypes=[('DAT files', '*.dat'), ('All files', '*.*')],  # Фильтр для расширений
-            title='Сохранить файл') #Заголовок
-    
-        if path:
-            array = self.data  # Данные для сохранения
-            # Вызываем метод контроллера для сохранения данных
-            self.controller.safe_data(path, array, zagolovok_file, a)
-            self.ui.update_message(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
+        
+        if self.entry_a.get():
+            a = float(self.entry_a.get()) #шаг между электродами
+            #Открываем диалоговое окно для выбора места сохранения
+            path = filedialog.asksaveasfilename(
+                defaultextension='.dat', # Автоматически добавляет .dat, если пользователь не указал расширение
+                filetypes=[('DAT files', '*.dat'), ('All files', '*.*')],  # Фильтр для расширений
+                title='Сохранить файл') #Заголовок
+        
+            if path:
+                array = self.data  # Данные для сохранения
+                # Вызываем метод контроллера для сохранения данных
+                self.controller.safe_data(path, array, zagolovok_file, a)
+                self.ui.update_message(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
+            else:
+                self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
         else:
-            self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
+            self.ui.update_message('Не задан шаг между электодами')
 
 
 
 
     def get_frame(self):
-        """
+        '''
         Возвращает фрейм вкладки.
-        """
+        '''
         return self.frame
   

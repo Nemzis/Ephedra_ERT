@@ -11,14 +11,14 @@ from view.ui_tab import DataTab  # Импортируем класс DataTab д�
 
 
 from module.komarov_sp.ui_KomarovSP import Komarov_SP
-
+from module.Sim.ui_Sim import Sim
 
 class UI:
     
     def __init__(self, root, controller):
         self.controller = controller
         self.root = root
-        self.root.title('Ephedra_ERT v2.0.0')
+        self.root.title('Ephedra_ERT v2.3.2 2025')
         
         # Устанавливаем минимальные размеры окна
         self.root.minsize(width=800, height=600)  # Минимальная ширина 600, высота 400
@@ -42,26 +42,22 @@ class UI:
         scrollbar = tk.Scrollbar(self.message_frame, command=self.message_area.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.message_area.config(yscrollcommand=scrollbar.set)
-        
 
-        
-        # Создаем вкладку Комаров ВП
+
+        # Создаем вкладку модуля Комаров ВП
         komarov_tab_instance = Komarov_SP(self.notebook, self)  # Передаем self (UI) в Komarov_SP
-        self.notebook.add(komarov_tab_instance.get_frame(), text='Комаров ВП')
+        self.notebook.add(komarov_tab_instance.get_frame(), text='ВП методом вычитания КС')
+    
+        # Создаем вкладку модуля Sim
+        Sim_tab_instance = Sim(self.notebook, self)  # Передаем self (UI) 
+        self.notebook.add(Sim_tab_instance.get_frame(), text='Сравнение моделей Sim')
   
     
-  
-    
-  
 
-    
-  
-    
-  
         
     def create_main_tab(self): 
         main_tab = ttk.Frame(self.notebook)
-        self.notebook.add(main_tab, text='Обработка 3D')
+        self.notebook.add(main_tab, text='Обработка 3D прямоугольная сетка')
         
         # Создаем меню
         self.create_menu()
@@ -84,37 +80,33 @@ class UI:
         menu_frame = tk.Frame(parent)
         menu_frame.grid(row=0, column=0, padx = 5, pady = 5, sticky='wn')
         
-        open_button = ttk.Button(menu_frame, text='Выбрать директорию', command = self.open_directory)
-        open_button.grid(row=0, column=0, padx = 5, pady = 5, sticky='wn')
+        open_button = ttk.Button(menu_frame, text='Выбрать директорию\nс файлами', command = self.open_directory)
+        open_button.grid(row=0, column=0, padx = 5, pady = 5, ipadx=5, ipady=5, sticky='nsew')
         
-       
+
+        #исправляем шаг
+        self.customer_frame_step = tk.LabelFrame(menu_frame, text='Множитель X Y R перед загрузкой')
+        self.customer_frame_step.grid(row=0, column = 2, rowspan = 3, padx=5, pady=5, sticky='nsew')
+        
+        self.entry_step_x = tk.Entry(self.customer_frame_step, width = 6)
+        self.entry_step_x.grid(row=0, column=2, sticky='wn', pady = 5, padx = 5)
+        
+        self.entry_step_y = tk.Entry(self.customer_frame_step, width = 6)
+        self.entry_step_y.grid(row=0, column=3, sticky='wn', pady = 5, padx = 5)
+        
+        self.entry_step_r = tk.Entry(self.customer_frame_step, width = 6)
+        self.entry_step_r.grid(row=0, column=4, sticky='wn', pady = 5, padx = 5)
+        
+        
+ 
+        
         # main
         self.nested_frame = tk.Frame(parent)
         self.nested_frame.grid(row=1, column=0, padx = 5, pady = 5, sticky='wn')
-        
-
-        
+             
         # Создаем вложенный Notebook
         self.nested_notebook = ttk.Notebook(self.nested_frame)
         self.nested_notebook.grid(row=0, column=0, pady = 5, padx = 5, sticky='wn')
-        
-        
-        # Добавляем содержимое во вложенную вкладку
-        self.nested_tab_SHL = ttk.Frame(self.nested_notebook)
-        label_SHL = tk.Label(self.nested_tab_SHL)
-        label_SHL.grid(row=0, column=0, pady = 5, padx = 5, sticky='wn')
-        
-        
-        # Добавляем содержимое во вложенную вкладку
-        self.nested_tab_PD = ttk.Frame(self.nested_notebook)
-        label_PD = tk.Label(self.nested_tab_PD)
-        label_PD.grid(row=0, column=0, pady = 5, padx = 5, sticky='wn')
-        
-        #DD
-        self.nested_tab_DD = ttk.Frame(self.nested_notebook)
-        # Добавляем содержимое во вложенную вкладку
-        label_DD = tk.Label(self.nested_tab_DD)
-        label_DD.grid(row=0, column=0, pady = 5, padx = 5, sticky='wn')
         
 
         
@@ -127,18 +119,29 @@ class UI:
         menubar.add_cascade(label = 'About', menu = file_menu)
         # Добавляем меню в окно
         self.root.config(menu = menubar)
+      
         
         
         
     def open_directory(self):
-        """
-        Открывает директорию и создаёт вкладки с данными.
-        """
+        #Открывает директорию и создаёт вкладки с данными.
         # Очищаем данные
         self.pole_dipole = list()
+        
+        self.pole_dipole_X_sistem = list() 
+        self.pole_dipole_L_sistem = list()
+        
         self.dipole_dipole = list()
+        self.dipole_dipole_X_sistem = list()
+        self.dipole_dipole_L_sistem = list()
+        
         self.schlumberger = list()
         self.data = list()
+        
+        
+        x = self.entry_step_x.get()
+        y = self.entry_step_y.get()
+        r = self.entry_step_r.get()
     
         try:
             # Выбираем директорию
@@ -156,7 +159,12 @@ class UI:
     
             # Получаем данные
             try:
-                self.pole_dipole, self.dipole_dipole, self.schlumberger, self.data = self.controller.processing_file()
+                self.pole_dipole, self.pole_dipole_X_sistem, self.pole_dipole_L_sistem,\
+                    self.dipole_dipole, self.dipole_dipole_L_sistem, self.dipole_dipole_X_sistem,\
+                        self.schlumberger, self.data = self.controller.processing_file(x,y,r)
+                        
+                        
+           
     
                 # Создаём вкладки
                 if self.data:
@@ -166,21 +174,48 @@ class UI:
                 if self.dipole_dipole:
                     body_tab_instance = DataTab(self.notebook, self, self.dipole_dipole, self.controller, 'Dipole-Dipole')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Dipole-Dipole')
+                                      
+                if self.dipole_dipole_X_sistem:
+                    body_tab_instance = DataTab(self.notebook, self, self.dipole_dipole_X_sistem, self.controller, 'Dipole-Dipole_X_sistem')
+                    self.nested_notebook.add(body_tab_instance.get_frame(), text='Dipole-Dipole_X_sistem')
+                    
+                if self.dipole_dipole_L_sistem:
+                    body_tab_instance = DataTab(self.notebook, self, self.dipole_dipole_L_sistem, self.controller, 'Dipole-Dipole_L_sistem')
+                    self.nested_notebook.add(body_tab_instance.get_frame(), text='Dipole-Dipole_L_sistem')
+                    
+
     
                 if self.schlumberger:
                     body_tab_instance = DataTab(self.notebook, self, self.schlumberger, self.controller, 'Schlumberge')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Schlumberge')
     
+
+    
                 if self.pole_dipole:
                     body_tab_instance = DataTab(self.notebook, self, self.pole_dipole, self.controller, 'Pole-Dipole')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Pole-Dipole')
+                
+                if self.pole_dipole_X_sistem:
+                    body_tab_instance = DataTab(self.notebook, self, self.pole_dipole_X_sistem, self.controller, 'Pole_dipole_X_sistem')
+                    self.nested_notebook.add(body_tab_instance.get_frame(), text='Pole_dipole_X_sistem')
+                    
+                if self.pole_dipole_L_sistem:
+                    body_tab_instance = DataTab(self.notebook, self, self.pole_dipole_L_sistem, self.controller, 'Pole_dipole_L_sistem')
+                    self.nested_notebook.add(body_tab_instance.get_frame(), text='Pole_dipole_L_sistem')
+                    
+
     
                 # Обновляем сообщение
                 self.update_message(
                     f'Данные разделены\n'
-                    f'{len(self.pole_dipole)} - трехэлектродка\n'
                     f'{len(self.dipole_dipole)} - дипольная\n'
-                    f'{len(self.schlumberger)} - шлюмберже'
+                    f'{len(self.dipole_dipole_X_sistem)} - дипольная система Х\n'
+                    f'{len(self.dipole_dipole_L_sistem)} - дипольная система L\n'
+                    f'{len(self.schlumberger)} - шлюмберже\n'
+                    f'{len(self.pole_dipole)} - трехэлектродка\n'
+                    f'{len(self.pole_dipole_X_sistem)} - трехэлектродка система Х\n'
+                    f'{len(self.pole_dipole_L_sistem)} - трехэлектродка система L\n'
+
                 )
     
             except Exception as e:
@@ -194,7 +229,7 @@ class UI:
     # Метод для обновления сообщения
     def update_message(self, message):
         # Добавляем сообщение в текстовое поле
-        self.message_area.insert(tk.END, message + "\n")
+        self.message_area.insert(tk.END, message + '\n')
         # Прокручиваем до конца, чтобы новое сообщение было видно
         self.message_area.see(tk.END)
         

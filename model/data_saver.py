@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Wed Feb 26 01:50:58 2025
 
 @author: Vladimir
-"""
+'''
 
 
 
@@ -56,7 +56,7 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
 
 
     
-    file = open(path, "w")
+    file = open(path, 'w')
     file.write(str(zagolovok_file) + ('\n')) #заголовок
     file.write(f'{len(all_X)}\n')
     file.write(f'{len(all_Y)}\n')
@@ -104,14 +104,14 @@ def REC_standart_ROK(path, array):
     # X Y Z R log(R) V I M
    
     if len(array[0]) == 5:
-        file = open(path, "w")
+        file = open(path, 'w')
         file.write(str('X\tY\tZ\tROK\tlog(ROK)\n')) #заголовок
         for item in array:
             file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
                        f'{float(item[3]):.4f}\t{float(item[4]):.4f}\n')
         file.close()
     elif len(array[0]) == 7:
-        file = open(path, "w")
+        file = open(path, 'w')
         file.write(str('X\tY\tZ\tROK\tlog(ROK)\tV\tI\n')) #заголовок
         for item in array:
             file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
@@ -119,7 +119,7 @@ def REC_standart_ROK(path, array):
                         f'{float(item[6]):.4f}\n')
         file.close()
     elif len(array[0]) == 8:
-        file = open(path, "w")
+        file = open(path, 'w')
         file.write(str('X\tY\tZ\tROK\tlog(ROK)\tV\tI\tM\n')) #заголовок
         for item in array:
             file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'

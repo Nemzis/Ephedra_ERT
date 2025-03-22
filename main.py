@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Wed Feb 26 01:47:27 2025
 
 @author: Vladimir
-"""
+'''
 
 
 from controller.controller import Controller
@@ -14,7 +14,7 @@ import tkinter as tk
 #Nuitka
 #MVC (Model-View-Controller)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     
     # Создаем UI
     root = tk.Tk()
@@ -26,7 +26,6 @@ if __name__ == "__main__":
     # Обновляем ссылку на контроллер в UI
     ui.controller = controller
     
-
     # Запускаем приложение
     ui.run()
 

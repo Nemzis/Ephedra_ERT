@@ -1,21 +1,33 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Mon Mar  3 01:27:38 2025
 
 @author: Vladimir
-"""
+'''
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import math #мат библиотека
 
 
-def separator (data):
+def separator (data, x, y, r):
     #Раскидываем на разные установки
     # 0 1    2    3     4     5     6        7         8  9  10    11  12      13  14  15  16  
     # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
     
     pole_dipole = list()
+    
+    pole_dipole_X_sistem = list()
+    pole_dipole_L_sistem = list()
+    
     dipole_dipole = list()
+    
+    dipole_dipole_X_sistem = list()
+    dipole_dipole_L_sistem = list()
+    
     schlumberger  = list()
+    
+    data = multiply_data(data, x, y, r)
+    
     
     for i in range(len(data)):
         A = list()
@@ -37,20 +49,38 @@ def separator (data):
             else:
                 dipole_dipole.append(data[i])
                 
+    if pole_dipole:
+        for i in range(len(pole_dipole)):
+            if pole_dipole[i][4] == pole_dipole[i][5] or pole_dipole[i][15] == pole_dipole[i][16]:
+                pole_dipole_L_sistem.append(pole_dipole[i])
+            else:
+                pole_dipole_X_sistem.append(pole_dipole[i])
+                
+        
+    if dipole_dipole:
+        for i in range(len(dipole_dipole)):
+            if dipole_dipole[i][4] == dipole_dipole[i][5] or dipole_dipole[i][15] == dipole_dipole[i][16]:
+                dipole_dipole_L_sistem.append(dipole_dipole[i])
+            else:
+                dipole_dipole_X_sistem.append(dipole_dipole[i])
+  
+    
+    if schlumberger:
+        pass              
 
-    return pole_dipole, dipole_dipole, schlumberger
+    return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole, dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger
 
 
 
 
 def filter_array(array, min_ROK, max_ROK, param_index):
-    """
+    '''
     Фильтрует массив по значениям ROK.
     :param array: Исходный массив.
     :param min_ROK: Минимальное значение ROK.
     :param max_ROK: Максимальное значение ROK.
     :return: Отфильтрованный массив.
-    """
+    '''
     filtered_array = list()
     for item in array:
         if min_ROK <= item[param_index] <= max_ROK:  # Проверяем, что значение ROK в диапазоне
@@ -80,12 +110,45 @@ def gistogramma(array, a, title):
     # Размер шрифта для меток осей
     ax.tick_params(axis='both', which='major', labelsize=6)  # Размер шрифта меток
     ax.set_xlabel('Значения', fontsize=6)  # Размер шрифта подписи оси X
-    ax.set_ylabel('Частота', fontsize=6)   # Размер шрифта подписи оси Y
+    ax.set_ylabel('Частость', fontsize=6)   # Размер шрифта подписи оси Y
     
     plt.close(fig)
     
     return fig  # Возвращаем объект Figure
 
+
+
+
+def plot(array, a, b):
+    """
+    Функция для построения графика.
+    :param array: Многомерный массив с данными.
+    :param a: Индекс для оси X.
+    :param b: Индекс для оси Y.
+    :return: Объект Figure с графиком.
+    """
+    fig = Figure(figsize=(5, 3))  # Создаём объект Figure
+    ax = fig.add_subplot(111)  # Добавляем оси
+
+    # Создаём списки для значений X и Y
+    x = [row[a] for row in array]  # Берём значение из столбца `a` для каждой строки
+    y = [row[b] for row in array]  # Берём значение из столбца `b` для каждой строки
+
+    # Строим график
+    ax.set_title('Электроды', fontsize=7)
+    
+    ax.plot(x, y, 'go', markersize=3)  # 'go' — зелёные кружки
+    ax.set_xlabel('X (м)', fontsize=6)  # Подпись оси X
+    ax.set_ylabel('Y (м)', fontsize=6)  # Подпись оси Y
+    ax.grid(which='major', linestyle=':')  # Сетка с пунктирными линиями
+
+    # Устанавливаем размер шрифта для цифр на осях
+    ax.tick_params(axis='both', which='major', labelsize=6)  # Размер шрифта для меток осей
+
+    fig.tight_layout()  # Улучшенное расположение элементов
+
+    return fig  # Возвращаем объект Figure
+  
 
 
 def Rok_3D2D (array, type_array):
@@ -151,36 +214,35 @@ def Rok_3D2D (array, type_array):
 
 
 def multiply_data(array, x, y, r):
-
-    if x != 0 and x != '':
+    if x and x != '0':
         x = float(x)
         multiply_id = [2, 3, 4, 5] 
         for row in array:
             for m in multiply_id:
-                if row[m] != '99999.999' and row[m] != 99999.999:
+                if isinstance(row[m], (int, float)) and row[m] != 99999.999:
                     row[m] = row[m] * x
+                    row[m] = round(row[m], 2)
                 else:
-                    continue                
-                
-    if y != 0 and y != '':
+                    continue                      
+    if y and y != '0':
         y = float(y)
         multiply_id_2 = [13, 14, 15, 16] 
         for row in array:
             for m in multiply_id_2:
-                if row[m] != '99999.999' and row[m] != 99999.999:
+                if isinstance(row[m], (int, float)) and row[m] != 99999.999:
                     row[m] = row[m] * y
+                    row[m] = round(row[m], 2)
                 else:
                     continue
-                
-                
-    if r != 0 and r != '':
+      
+    if r and r != '0':
         r = float(r)
         for row in array:
-            row[1] = row[1] * r
-              
-                
-        return array  
-    
+            if isinstance(row[1], (int, float)):
+                row[1] = row[1] * r
+                row[1] = round(row[1], 4)
+     
+    return array
 
 
 

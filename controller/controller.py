@@ -30,24 +30,36 @@ class Controller:
         
 
         
-    def processing_file(self):
+    def processing_file(self, x, y, r):
         #Вызывает функцию separator для разделения данных.
 
         if not self.data:
             self.ui.update_message('Данные не загружены.')
         
         # Вызываем функцию separator
-        pole_dipole, dipole_dipole, schlumberger = dp.separator(self.data)
+        pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole,\
+            dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger = dp.separator(self.data, x ,y, r)
         
-        return pole_dipole, dipole_dipole, schlumberger, self.data
+        return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole,\
+            dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger, self.data
     
     
     
     def get_histogram(self, data, a, title):
-        '''
-        Возвращает гистограмму для данных.
-        '''
+        #Возвращает гистограмму для данных.
         return dp.gistogramma(data, a, title)
+    
+
+
+    def get_plot(self, array, a, b):
+        """
+        Метод для получения графика.
+        :param array: Многомерный массив с данными.
+        :param a: Индекс для оси X.
+        :param b: Индекс для оси Y.
+        :return: Объект Figure с графиком.
+        """
+        return dp.plot(array, a, b)  # Возвращаем объект Figure
     
     
     

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on Wed Feb 26 01:49:21 2025
 
 @author: Vladimir
-"""
+'''
 
 # 0 1    2    3     4     5     6        7         8  9  10    11  12      13  14  15  16  
 # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
@@ -67,10 +67,10 @@ def mass_load_files (path_f):
         if array[i][1] == 'Rho':
             del array[i]
             a += 1
-        elif array[i][2] == '99999.999' and array[i][3] == '99999.999':
+        elif array[i][2] == 99999.999 and array[i][3] == 99999.999:
             del array[i]
             b += 1
-        elif array[i][4] == '99999.999' or array[i][5] == '99999.999':
+        elif array[i][4] == 99999.999 or array[i][5] == 99999.999:
             del array[i]
             c += 1
             
