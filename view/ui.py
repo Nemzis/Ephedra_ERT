@@ -45,11 +45,11 @@ class UI:
 
 
         # Создаем вкладку модуля Комаров ВП
-        komarov_tab_instance = Komarov_SP(self.notebook, self)  # Передаем self (UI) в Komarov_SP
+        komarov_tab_instance = Komarov_SP(self.notebook, self)
         self.notebook.add(komarov_tab_instance.get_frame(), text='ВП методом вычитания КС')
     
         # Создаем вкладку модуля Sim
-        Sim_tab_instance = Sim(self.notebook, self)  # Передаем self (UI) 
+        Sim_tab_instance = Sim(self.notebook, self)
         self.notebook.add(Sim_tab_instance.get_frame(), text='Сравнение моделей Sim')
   
     

@@ -78,3 +78,29 @@ def mass_load_files (path_f):
     return array, a, b, c, SP
 
 
+
+
+
+def load_file(path):
+    array = list()
+
+    with open(path, 'r') as f:
+        array = f.readlines()
+
+    i = len(array)-1
+    while i >= 0:
+    #for i in range(len(array)):
+        array[i] = array[i].replace('\n', '')
+        array[i] = array[i].replace('\t ', '\t') #странная штука но поппалась как-то
+        array[i] = array[i].replace(' ', '\t')
+        array[i] = array[i].split('\t')
+
+        try:
+            array[i] = list(map(float, array[i]))
+        except ValueError:
+            del array[i]
+            
+        i -= 1
+
+    return array
+

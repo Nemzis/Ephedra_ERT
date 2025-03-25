@@ -52,28 +52,12 @@ class Controller:
 
 
     def get_plot(self, array, a, b):
-        """
-        Метод для получения графика.
-        :param array: Многомерный массив с данными.
-        :param a: Индекс для оси X.
-        :param b: Индекс для оси Y.
-        :return: Объект Figure с графиком.
-        """
         return dp.plot(array, a, b)  # Возвращаем объект Figure
-    
     
     
         
     def filter_data_c(self, array, min_ROK, max_ROK, param_index):
-        '''
-        Фильтрует данные через процессор.
-        :param array: Исходный массив.
-        :param min_ROK: Минимальное значение ROK.
-        :param max_ROK: Максимальное значение ROK.
-        :return: Отфильтрованный массив.
-        '''
 
-        
         try:
             # Преобразуем значения в float
             min_ROK = float(min_ROK) if min_ROK else float('-inf')  # Если min_ROK пустое, используем -∞
@@ -93,30 +77,37 @@ class Controller:
         return array_filter
     
     
-    
     def processing_xyzrho(self, array, type_array, path):
         data = dp.Rok_3D2D(array, type_array)
         return ds.REC_standart_ROK(path, data)
         
         
-        #multiply_data
-        
-        
-        
     def multiply(self, array, x, y, r):
-        
         array = dp.multiply_data(array, x, y, r)
+        return array
+
+
+    def processing_array_for_PyGimli(self, path_1, path_2, data):
+        xyz = dl.load_file(path_1)
+        
+        return ds.Rec_PyGimli(path_2, xyz, data)
+        
+    
+    def safe_data(self, path, array, zagolovok_file, a):
+        #Возвращает гистограмму для данных.
+        return ds.REC_in_files_for_INV(path, array, zagolovok_file, a)
+    
+    
+    #-----------------------------------------------------работа с модулем Sim
+    def load_file(self, path):
+        
+        array = dl.load_file(path)
         
         return array
 
 
 
 
-
-    
-    def safe_data(self, path, array, zagolovok_file, a):
-        #Возвращает гистограмму для данных.
-        return ds.REC_in_files_for_INV(path, array, zagolovok_file, a)
 
 
     

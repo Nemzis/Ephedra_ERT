@@ -51,7 +51,7 @@ class DataTab:
             self.button_safe_rho.config(state='disabled')
             
             
-        self.button_safe_rho = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл PyGimli', state='normal')
+        self.button_safe_rho = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл PyGimli', command = self.safe_PyGimli)
         self.button_safe_rho.grid(row=2, column=0, pady = 5, padx = 5, sticky='nsew')
             
         open_apply = ttk.Button(self.body_tab, width=25, text='Восстановить исходный\nмассив', command = self.recovery_filter )
@@ -171,6 +171,37 @@ class DataTab:
         return self.body_tab
     
 
+
+    
+    
+    # -----------------------------------------------------------
+    #PyGimli ----------------------------------------------------
+
+    '''
+    открыть файл координта и указать пусть сохранения
+    '''
+    
+    def safe_PyGimli(self):
+        path_1 = filedialog.askopenfilename(title='Выберите файл координат')
+        
+        path_2 = filedialog.asksaveasfilename(
+            defaultextension='.dat', # Автоматически добавляет .dat, если пользователь не указал расширение
+            filetypes=[('DAT files', '*.dat'), ('All files', '*.*')],  # Фильтр для расширений
+            title='Сохранить файл') #Заголовок
+        
+        if not path_1 or not path_2:
+            self.update_message("Ошибка: Не выбраны файлы")
+            
+        
+        self.controller.processing_array_for_PyGimli(path_1, path_2, self.data)
+        self.ui.update_message('Файл PyGimli записан')
+    
+    
+    
+    
+    # -----------------------------------------------------------
+    #Умножение --------------------------------------------------
+    
 
     def multiply_array(self):
         

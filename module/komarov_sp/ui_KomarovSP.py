@@ -51,28 +51,28 @@ class Komarov_SP:
         label.grid(row=a, column=0, sticky='nw', padx=5, pady=5)
         a += 1
 
-        button_safe_file = ttk.Button(self.komarov_body_tab, text='Сохранить')
-        button_safe_file.grid(row=a, column=0, sticky='nw', ipadx=1, ipady=0, padx=1, pady=1)
+        button_safe_file = ttk.Button(self.komarov_body_tab, width = w, text='Сохранить')
+        button_safe_file.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=5, sticky='nw')
         a += 1
 
-        button_open_file_1 = ttk.Button(self.komarov_body_tab, text='Низкая частота', command=self.array_low)
-        button_open_file_1.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
+        button_open_file_1 = ttk.Button(self.komarov_body_tab, width = w, text='Низкая частота', command=self.array_low)
+        button_open_file_1.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=5, sticky='nw')
         a += 1
 
-        button_open_file_2 = ttk.Button(self.komarov_body_tab, text='Высокая частота', command=self.array_high)
-        button_open_file_2.grid(row=a, column=0, ipadx=1, ipady=0, padx=1, pady=1, sticky='nw')
+        button_open_file_2 = ttk.Button(self.komarov_body_tab, width = w, text='Высокая частота', command=self.array_high)
+        button_open_file_2.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=5, sticky='nw')
         a += 1
 
-        button_rasschet = ttk.Button(self.komarov_body_tab, text='Рассчитать')
-        button_rasschet.grid(row=a, column=0, ipadx=1, ipady=0, padx=0, pady=1, sticky='nw')
+        button_rasschet = ttk.Button(self.komarov_body_tab, width = w, text='Рассчитать')
+        button_rasschet.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=5, sticky='nw')
         a += 1
 
-        open_button_ask = ttk.Button(self.komarov_body_tab, text='?', command=self.helper)
-        open_button_ask.grid(row=a, column=0, ipadx=0, ipady=0, padx=0, pady=1, sticky='nw')
+        open_button_ask = ttk.Button(self.komarov_body_tab, width = w, text='?', command=self.helper)
+        open_button_ask.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=5, sticky='nw')
         a += 1
         
-        open_button_safe_chek = ttk.Button(self.komarov_body_tab,  text='Cохранить настройки модуля', command=self.on_closing)
-        open_button_safe_chek.grid(row=a, column=0, ipadx=0, ipady=0, padx=0, pady=1, sticky='nw')
+        open_button_safe_chek = ttk.Button(self.komarov_body_tab, width = w, text='Cохранить настройки модуля', command=self.on_closing)
+        open_button_safe_chek.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=5, sticky='nw')
         
         
 
@@ -463,30 +463,6 @@ def save_file():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-# Создаем и размещаем метки
-
-label_3 = tk.Label(root, text='File: ')
-label_4 = tk.Label(root, text='File: ')
-
-
-label_5 = tk.Label(root, text='')
-label_5.grid(column=0, row=11, sticky=SW)
-
-
-label.grid(column=0, row=0, sticky=NW)
-label_3.grid(column=0, row=2, sticky=NW)
-label_4.grid(column=0, row=3, sticky=NW)
 
 
 

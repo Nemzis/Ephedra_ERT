@@ -4,7 +4,7 @@ Created on Wed Feb 26 01:50:58 2025
 
 @author: Vladimir
 '''
-
+import copy
 
 
 
@@ -91,8 +91,6 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
     
     
     
-    
-
 
 #запись ROK
 def REC_standart_ROK(path, array):
@@ -127,3 +125,84 @@ def REC_standart_ROK(path, array):
                         f'{float(item[6]):.4f}\t{float(item[7]):.4f}\n')
         file.close()
     
+    
+    
+    
+def Rec_PyGimli(path_2, xyz, data):
+    
+    data_copy = copy.deepcopy(data)
+    for i in range(len(xyz)):
+        for d in range(len(data)):
+            
+            if xyz[i][1] == data_copy[d][2] and xyz[i][2] == data_copy[d][13]:
+                data_copy[d][2] = xyz[i][0]
+                
+            if xyz[i][1] == data_copy[d][3] and xyz[i][2] == data_copy[d][14]:
+                data_copy[d][3] = xyz[i][0]
+                
+            if xyz[i][1] == data_copy[d][4] and xyz[i][2] == data_copy[d][15]:
+                data_copy[d][4] = xyz[i][0] 
+                
+            if xyz[i][1] == data_copy[d][5] and xyz[i][2] == data_copy[d][16]:
+                data_copy[d][5] = xyz[i][0] 
+    
+
+    file = open(path_2, 'w')
+    file.write(str(f'{len(xyz)}\n'))
+    file.write(str('#\tx\ty\tz\n')) 
+    for item in xyz:
+        file.write(f'{float(item[1]):.2f}\t{float(item[2]):.2f}\t{float(item[3]):.2f}\n')
+        
+    file.write(str(f'{len(data_copy)}\n'))
+    
+    
+    
+    
+    if data_copy[0][2] == 99999.999:
+        
+        file.write(str('#\ta\tm\tn\tR\n'))
+        for item in data_copy:
+            file.write(f'{int(item[3])}\t{int(item[4])}\t{int(item[5])}\t{float(item[1]):.3f}\n')
+    
+    elif data_copy[0][3] == 99999.999:
+        
+        file.write(str('#\ta\tm\tn\tR\n'))
+        for item in data_copy:
+            file.write(f'{int(item[2])}\t{int(item[4])}\t{int(item[5])}\t{float(item[1]):.3f}\n')
+        
+    else:
+        file.write(str('#\ta\tb\tm\tn\tR\n'))
+        for item in data_copy:
+            file.write(f'{int(item[2])}\t{int(item[3])}\t{int(item[4])}\t{int(item[5])}\t{float(item[1]):.3f}\n')
+            
+            
+        
+    file.write(str('0'))
+    
+        
+        
+        
+        
+        
+#формат файла 
+# 0  1    2     3     4     5     6        7       8  9  10    11  12      13  14  15  16  
+# # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny ...
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+
