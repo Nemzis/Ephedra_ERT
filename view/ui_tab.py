@@ -57,7 +57,6 @@ class DataTab:
         open_apply = ttk.Button(self.body_tab, width=25, text='Восстановить исходный\nмассив', command = self.recovery_filter )
         open_apply.grid(row=3, column=0, padx = 5, pady = 5,  sticky='nsew')
             
-            
 
        
         # -----------------------------------------------------------

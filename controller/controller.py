@@ -100,11 +100,12 @@ class Controller:
     
     #-----------------------------------------------------работа с модулем Sim
     def load_file(self, path):
-        
-        array = dl.load_file(path)
-        
-        return array
-
+        array, head = dl.load_file(path)
+        return array, head
+    
+    
+    def save_file(self, path, array):
+        return ds.REC_standart_ROK(path, array)
 
 
 

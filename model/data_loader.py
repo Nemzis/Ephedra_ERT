@@ -16,6 +16,7 @@ Created on Wed Feb 26 01:49:21 2025
 #  M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12', 'M13', 'M14', 'M15', 'M16', 'M17', 'M18', 'M19', 'M20', 'M']
 
 import os
+import re
 
 
 
@@ -80,7 +81,7 @@ def mass_load_files (path_f):
 
 
 
-
+'''
 def load_file(path):
     array = list()
 
@@ -91,7 +92,7 @@ def load_file(path):
     while i >= 0:
     #for i in range(len(array)):
         array[i] = array[i].replace('\n', '')
-        array[i] = array[i].replace('\t ', '\t') #странная штука но поппалась как-то
+        array[i] = array[i].replace('\t ', '\t') #странная штука но попалась как-то
         array[i] = array[i].replace(' ', '\t')
         array[i] = array[i].split('\t')
 
@@ -99,8 +100,76 @@ def load_file(path):
             array[i] = list(map(float, array[i]))
         except ValueError:
             del array[i]
-            
         i -= 1
-
+    
     return array
+'''
+
+
+
+def load_file(path):
+    array = []
+    head = []
+
+    with open(path, 'r') as f:
+        a = 0
+        for line in f:
+            line = line.strip()
+            if not line:  # Пропускаем пустые строки
+                continue
+                
+            # Разделяем строку, учитывая что разделитель может быть табуляцией или несколькими пробелами
+            parts = [p for p in line.replace('\t', ' ').split(' ') if p]
+            
+            if a < 15:
+                head.append(parts)
+            a += 1
+            
+             
+
+            
+            try:
+                # Пытаемся преобразовать все части в float
+                row = list(map(float, parts))
+                array.append(row)
+            except (ValueError, IndexError):
+                
+                # Пропускаем строки, которые не удалось преобразовать (заголовки и т.д.)
+                #print(f"Skipping line: {line}")
+                continue
+    
+    
+
+    a = 0
+    
+    if head[9] == ['Chargeability']:
+        a = 12
+    elif head[0][0] == '#':
+        a = 1
+    else:
+        a = 9
+        
+    i = len(head)-1
+    while i >= a:
+        del head[i]
+        i-=1
+        
+
+    return array, head
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

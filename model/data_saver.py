@@ -94,20 +94,31 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
 
 #запись ROK
 def REC_standart_ROK(path, array):
-    #ver 2.0
+    #ver 2.1
     #массив, путь
     #файл должен быть подготовлен:
+    # X Y Z R
     # X Y Z R log(R)
     # X Y Z R log(R) V I 
     # X Y Z R log(R) V I M
-   
-    if len(array[0]) == 5:
+
+
+    if len(array[0]) == 4:
+        file = open(path, 'w')
+        file.write(str('X\tY\tZ\tROK\n')) #заголовок
+        for item in array:
+            file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
+                       f'{float(item[3]):.4f}\n')
+        file.close()    
+
+    elif len(array[0]) == 5:
         file = open(path, 'w')
         file.write(str('X\tY\tZ\tROK\tlog(ROK)\n')) #заголовок
         for item in array:
             file.write(f'{float(item[0]):.2f}\t{float(item[1]):.2f}\t{float(item[2]):.2f}\t'
                        f'{float(item[3]):.4f}\t{float(item[4]):.4f}\n')
         file.close()
+        
     elif len(array[0]) == 7:
         file = open(path, 'w')
         file.write(str('X\tY\tZ\tROK\tlog(ROK)\tV\tI\n')) #заголовок
@@ -116,6 +127,7 @@ def REC_standart_ROK(path, array):
                        f'{float(item[3]):.4f}\t{float(item[4]):.4f}\t{float(item[5]):.4f}\t'
                         f'{float(item[6]):.4f}\n')
         file.close()
+        
     elif len(array[0]) == 8:
         file = open(path, 'w')
         file.write(str('X\tY\tZ\tROK\tlog(ROK)\tV\tI\tM\n')) #заголовок

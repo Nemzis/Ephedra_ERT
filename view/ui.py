@@ -21,7 +21,7 @@ class UI:
         self.root.title('Ephedra_ERT v2.3.2 2025')
         
         # Устанавливаем минимальные размеры окна
-        self.root.minsize(width=800, height=600)  # Минимальная ширина 600, высота 400
+        self.root.minsize(width=850, height=600)  # Минимальная ширина 600, высота 400
         
         # Создаем Notebook (контейнер для вкладок)
         self.notebook = ttk.Notebook(self.root)
@@ -33,7 +33,7 @@ class UI:
 
         # Создаем текстовое поле для сообщений с прокруткой
         self.message_frame = tk.Frame(self.root)
-        self.message_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
+        self.message_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=15)
     
         self.message_area = tk.Text(self.message_frame, height=5, wrap=tk.WORD)
         self.message_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
