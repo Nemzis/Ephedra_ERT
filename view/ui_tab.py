@@ -28,11 +28,9 @@ class DataTab:
         #эта хрень должна быть последней
         self.frame = self.create_data_tab()
 
-        
 
     def create_data_tab(self):
         
-
         
         self.body_tab = ttk.Frame(self.parent)
         
@@ -71,17 +69,13 @@ class DataTab:
         self.entry_zagolovok.grid(row=1, column=0, sticky='w', pady = 5, padx = 5)
         self.entry_zagolovok.insert(0, 'Test')
         
-        # Поле ввода для параметра шага
-        label_a = tk.Label(self.customer_frame, text='Половина расстояния\n между электродами')
-        label_a.grid(row=2, column=0, sticky='wn', pady = 5, padx = 5)
 
-        self.entry_a = tk.Entry(self.customer_frame, width=15)
-        self.entry_a.grid(row=3, column=0, sticky='wn', pady = 5, padx = 5)
         
-        
+    
         # -----------------------------------------------------------
         self.customer_frame_filter = tk.LabelFrame(self.body_tab, text='Фильтр по диапазону')
         self.customer_frame_filter.grid(row=8, column=0, rowspan = 8, padx=10, pady=10, sticky='nsew')
+        
         
         label_Rho_min = tk.Label(self.customer_frame_filter, text='Минимум')
         label_Rho_min.grid(row=0, column=0, sticky='nsew', pady = 5, padx = 5)
@@ -94,6 +88,7 @@ class DataTab:
         
         self.entry_Rho_max = tk.Entry(self.customer_frame_filter, width=10)
         self.entry_Rho_max.grid(row=3, column=0, sticky='nsew', pady = 5, padx = 5)
+        
         
         open_rasschet = ttk.Button(self.customer_frame_filter, width = w, text='Рассчитать', command = self.filter_data)
         open_rasschet.grid(row=4, column=0, padx = 5, pady = 5, sticky='nsew')
@@ -170,29 +165,21 @@ class DataTab:
         return self.body_tab
     
 
-
-    
     
     # -----------------------------------------------------------
     #PyGimli ----------------------------------------------------
 
-    '''
-    открыть файл координта и указать пусть сохранения
-    '''
     
     def safe_PyGimli(self):
-        path_1 = filedialog.askopenfilename(title='Выберите файл координат')
-        
-        path_2 = filedialog.asksaveasfilename(
+
+    
+        path = filedialog.asksaveasfilename(
             defaultextension='.dat', # Автоматически добавляет .dat, если пользователь не указал расширение
             filetypes=[('DAT files', '*.dat'), ('All files', '*.*')],  # Фильтр для расширений
             title='Сохранить файл') #Заголовок
         
-        if not path_1 or not path_2:
-            self.update_message("Ошибка: Не выбраны файлы")
-            
         
-        self.controller.processing_array_for_PyGimli(path_1, path_2, self.data)
+        self.controller.processing_array_for_PyGimli(path, self.data)
         self.ui.update_message('Файл PyGimli записан')
     
     
@@ -453,31 +440,24 @@ class DataTab:
     
     
     # -----------------------------------------------------------
-
-
-
-
     def safe_data(self):
         # Получаем значения из полей ввода
         zagolovok_file = self.entry_zagolovok.get()  # Заголовок файла
         
-        if self.entry_a.get():
-            a = float(self.entry_a.get()) #шаг между электродами
-            #Открываем диалоговое окно для выбора места сохранения
-            path = filedialog.asksaveasfilename(
-                defaultextension='.dat', # Автоматически добавляет .dat, если пользователь не указал расширение
-                filetypes=[('DAT files', '*.dat'), ('All files', '*.*')],  # Фильтр для расширений
-                title='Сохранить файл') #Заголовок
-        
-            if path:
-                array = self.data  # Данные для сохранения
-                # Вызываем метод контроллера для сохранения данных
-                self.controller.safe_data(path, array, zagolovok_file, a)
-                self.ui.update_message(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
-            else:
-                self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
+        #Открываем диалоговое окно для выбора места сохранения
+        path = filedialog.asksaveasfilename(
+            defaultextension='.dat', # Автоматически добавляет .dat, если пользователь не указал расширение
+            filetypes=[('DAT files', '*.dat'), ('All files', '*.*')],  # Фильтр для расширений
+            title='Сохранить файл') #Заголовок
+    
+        if path:
+            array = self.data  # Данные для сохранения
+            # Вызываем метод контроллера для сохранения данных
+            self.controller.safe_data(path, array, zagolovok_file)
+            self.ui.update_message(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
         else:
-            self.ui.update_message('Не задан шаг между электодами')
+            self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
+
 
 
 

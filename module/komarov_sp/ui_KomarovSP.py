@@ -431,5 +431,16 @@ class Komarov_SP:
         text_widget.config(state='disabled')
 
 
+'''
+сортировка для txt and dat внутри одного файла 
+Amn
+mnB
+внутри сортировка с минимального сверху вниз 
+
+внутри .dat после кс SP и Ox и AO или OB 
+
+
+'''
+
 
 

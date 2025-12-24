@@ -38,10 +38,10 @@ class Controller:
         
         # Вызываем функцию separator
         pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole,\
-            dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger = dp.separator(self.data, x ,y, r)
+            dipole_dipole_L_sistem, dipole_dipole_X_sistem, pl_messege, schlumberger = dp.separator(self.data, x ,y, r)
         
         return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole,\
-            dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger, self.data
+            dipole_dipole_L_sistem, dipole_dipole_X_sistem, pl_messege, schlumberger, self.data
     
     
     
@@ -87,15 +87,13 @@ class Controller:
         return array
 
 
-    def processing_array_for_PyGimli(self, path_1, path_2, data):
-        xyz = dl.load_file(path_1)
-        
-        return ds.Rec_PyGimli(path_2, xyz, data)
+    def processing_array_for_PyGimli(self, path, data):
+        #Rec_PyGimli
+        return ds.Rec_PyGimli_v2(path, data)
         
     
-    def safe_data(self, path, array, zagolovok_file, a):
-        #Возвращает гистограмму для данных.
-        return ds.REC_in_files_for_INV(path, array, zagolovok_file, a)
+    def safe_data(self, path, array, zagolovok_file):
+        return ds.REC_in_files_for_INV(path, array, zagolovok_file)
     
     
     #-----------------------------------------------------работа с модулем Sim

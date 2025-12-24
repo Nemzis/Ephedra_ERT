@@ -5,16 +5,13 @@ Created on Wed Feb 26 01:51:23 2025
 '''
 import tkinter as tk
 from tkinter import ttk, filedialog
-
-
 from view.ui_tab import DataTab  # Импортируем класс DataTab для вкладок
-
-
 from module.komarov_sp.ui_KomarovSP import Komarov_SP
 from module.Sim.ui_Sim import Sim
 
+
+
 class UI:
-    
     def __init__(self, root, controller):
         self.controller = controller
         self.root = root
@@ -34,15 +31,20 @@ class UI:
         # Создаем текстовое поле для сообщений с прокруткой
         self.message_frame = tk.Frame(self.root)
         self.message_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=15)
+        
+        
     
         self.message_area = tk.Text(self.message_frame, height=5, wrap=tk.WORD)
         self.message_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    
     
         # Добавляем прокрутку
         scrollbar = tk.Scrollbar(self.message_frame, command=self.message_area.yview)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.message_area.config(yscrollcommand=scrollbar.set)
+        
 
+        
 
         # Создаем вкладку модуля Комаров ВП
         komarov_tab_instance = Komarov_SP(self.notebook, self)
@@ -53,7 +55,6 @@ class UI:
         self.notebook.add(Sim_tab_instance.get_frame(), text='Сравнение моделей Sim')
   
     
-
         
     def create_main_tab(self): 
         main_tab = ttk.Frame(self.notebook)
@@ -84,7 +85,7 @@ class UI:
         open_button.grid(row=0, column=0, padx = 5, pady = 5, ipadx=5, ipady=5, sticky='nsew')
         
 
-        #исправляем шаг
+        #поле домножение шага
         self.customer_frame_step = tk.LabelFrame(menu_frame, text='Множитель X Y R перед загрузкой')
         self.customer_frame_step.grid(row=0, column = 2, rowspan = 3, padx=5, pady=5, sticky='nsew')
         
@@ -98,7 +99,6 @@ class UI:
         self.entry_step_r.grid(row=0, column=4, sticky='wn', pady = 5, padx = 5)
         
         
- 
         
         # main
         self.nested_frame = tk.Frame(parent)
@@ -142,6 +142,8 @@ class UI:
         x = self.entry_step_x.get()
         y = self.entry_step_y.get()
         r = self.entry_step_r.get()
+        
+        self.pl_messege = 0
     
         try:
             # Выбираем директорию
@@ -161,10 +163,9 @@ class UI:
             try:
                 self.pole_dipole, self.pole_dipole_X_sistem, self.pole_dipole_L_sistem,\
                     self.dipole_dipole, self.dipole_dipole_L_sistem, self.dipole_dipole_X_sistem,\
-                        self.schlumberger, self.data = self.controller.processing_file(x,y,r)
+                        self.schlumberger, self.pl_messege, self.data = self.controller.processing_file(x,y,r)
                         
                         
-           
     
                 # Создаём вкладки
                 if self.data:
@@ -215,6 +216,7 @@ class UI:
                     f'{len(self.pole_dipole)} - трехэлектродка\n'
                     f'{len(self.pole_dipole_X_sistem)} - трехэлектродка система Х\n'
                     f'{len(self.pole_dipole_L_sistem)} - трехэлектродка система L\n'
+                    f'{self.pl_messege} - Удалено элекродов M и N равноудаленных от A (Pole-Dipole)\n'
 
                 )
     

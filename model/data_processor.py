@@ -28,7 +28,14 @@ def separator (data, x, y, r):
     
     data = multiply_data(data, x, y, r)
     
+    pl_messege = 0
     
+    #функция определения длины отрезка
+    def length_line(x1,y1,x2,y2):
+        dl = (((x2-x1)*(x2-x1))+((y2-y1)*(y2-y1))) ** (0.5)
+        return dl
+
+
     for i in range(len(data)):
         A = list()
         B = list()
@@ -50,6 +57,37 @@ def separator (data, x, y, r):
                 dipole_dipole.append(data[i])
                 
     if pole_dipole:
+        
+        
+        
+        i = len(pole_dipole)-1
+        while i >= 0:
+            
+            A = list()
+
+            M = list()
+            N = list()
+            
+            A = [pole_dipole[i][2], pole_dipole[i][13]]
+
+            M = [pole_dipole[i][4], pole_dipole[i][15]]
+            N = [pole_dipole[i][5], pole_dipole[i][16]]
+            
+            
+            AM = length_line(A[0],A[1],M[0],M[1])
+            AN = length_line(A[0],A[1],N[0],N[1])
+            
+            
+            #Временное решение
+            if AM - AN == 0:
+                del pole_dipole[i]
+                pl_messege += 1
+                
+            i -=1
+        
+        
+        
+        
         for i in range(len(pole_dipole)):
             if pole_dipole[i][4] == pole_dipole[i][5] or pole_dipole[i][15] == pole_dipole[i][16]:
                 pole_dipole_L_sistem.append(pole_dipole[i])
@@ -68,7 +106,7 @@ def separator (data, x, y, r):
     if schlumberger:
         pass              
 
-    return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole, dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger
+    return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole, dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger, pl_messege
 
 
 

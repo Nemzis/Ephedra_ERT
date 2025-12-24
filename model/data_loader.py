@@ -16,9 +16,10 @@ Created on Wed Feb 26 01:49:21 2025
 #  M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12', 'M13', 'M14', 'M15', 'M16', 'M17', 'M18', 'M19', 'M20', 'M']
 
 import os
-import re
 
 
+
+#гармоники пока что отбрасываюься
 
 def mass_load_files (path_f):
     file_list = os.listdir(path_f)
@@ -57,7 +58,7 @@ def mass_load_files (path_f):
             result[i].insert(10, '888')
             #list.insert(index, element)
     
-        # Соединение по горизонтали*
+        # Соединение по горизонтали
         array = [row1 + row2 for row1, row2 in zip(result, array_SP)]
     
     a = 0
@@ -81,31 +82,6 @@ def mass_load_files (path_f):
 
 
 
-'''
-def load_file(path):
-    array = list()
-
-    with open(path, 'r') as f:
-        array = f.readlines()
-
-    i = len(array)-1
-    while i >= 0:
-    #for i in range(len(array)):
-        array[i] = array[i].replace('\n', '')
-        array[i] = array[i].replace('\t ', '\t') #странная штука но попалась как-то
-        array[i] = array[i].replace(' ', '\t')
-        array[i] = array[i].split('\t')
-
-        try:
-            array[i] = list(map(float, array[i]))
-        except ValueError:
-            del array[i]
-        i -= 1
-    
-    return array
-'''
-
-
 
 def load_file(path):
     array = []
@@ -125,8 +101,6 @@ def load_file(path):
                 head.append(parts)
             a += 1
             
-             
-
             
             try:
                 # Пытаемся преобразовать все части в float

@@ -7,8 +7,7 @@ Created on Wed Feb 26 01:50:58 2025
 import copy
 
 
-
-def REC_in_files_for_INV(path, array, zagolovok_file, a):
+def REC_in_files_for_INV(path, array, zagolovok_file):
     #Путь, массив, заголовок, половина расстояния между электродами
     #формат файла 
     # 0  1    2     3     4     5     6        7       8  9  10    11  12      13  14  15  16  
@@ -18,8 +17,9 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
         array[i] = list(map(str, array[i]))
 
 
-    all_X = list()
-    all_Y = list()
+    all_X2 = list()
+    all_Y2 = list()
+    
     for item in array:
         
         x1 = float(item[4])
@@ -27,49 +27,46 @@ def REC_in_files_for_INV(path, array, zagolovok_file, a):
         y1 = float(item[15])
         y2 = float(item[16])
         
-        all_X.append(x1)
-        all_X.append(x1 + a)
-        
-        all_X.append(x2)
-        all_X.append(x2 + a)
-        
-        all_Y.append(y1)
-        all_Y.append(y1 + a)
-        
-        all_Y.append(y2)
-        all_Y.append(y2 + a)
-        
-        
-    all_X = sorted(list(dict.fromkeys(all_X)))
-    all_Y = sorted(list(dict.fromkeys(all_Y)))
-    
-    del all_X[len(all_X)-1]
-    del all_Y[len(all_Y)-1]
-    
-    
-    for i in range(len(all_X)):
-        all_X[i] = round(all_X[i], 2)
-        
-        
-    for i in range(len(all_Y)):
-        all_Y[i] = round(all_Y[i], 2)
+        all_X2.append(x1)
+        all_X2.append(x2)
+        all_Y2.append(y1)
+        all_Y2.append(y2)
 
+        
+    all_X2 = sorted(list(dict.fromkeys(all_X2)))
+    all_Y2 = sorted(list(dict.fromkeys(all_Y2)))
 
     
+    b = (all_X2[2]-all_X2[1])/2
+    
+    array_X = []
+    i = all_X2[0]
+    
+    while i <= all_X2[-1]:
+        array_X.append(i)
+        i += b
+        
+        
+    array_Y = []
+    i = all_Y2[0]
+    
+    while i <= all_Y2[-1]:
+        array_Y.append(i)
+        i += b
+         
     file = open(path, 'w')
     file.write(str(zagolovok_file) + ('\n')) #заголовок
-    file.write(f'{len(all_X)}\n')
-    file.write(f'{len(all_Y)}\n')
+    file.write(f'{len(array_X)}\n')
+    file.write(f'{len(array_Y)}\n')
     file.write(str('Nonuniform grid\n'))
     file.write(str('X-location of grid lines\n'))
 
-
-    for item in all_X:
+    for item in array_X:
         file.write(f'{item}\t')
     
     file.write(str('\nY-location of grid lines\n'))
 
-    for item in all_Y:
+    for item in array_Y:
         file.write(f'{item}\t')
 
     file.write(str('\n11\n'))
@@ -138,70 +135,160 @@ def REC_standart_ROK(path, array):
         file.close()
     
     
-    
-    
-def Rec_PyGimli(path_2, xyz, data):
-    
-    data_copy = copy.deepcopy(data)
-    for i in range(len(xyz)):
-        for d in range(len(data)):
-            
-            if xyz[i][1] == data_copy[d][2] and xyz[i][2] == data_copy[d][13]:
-                data_copy[d][2] = xyz[i][0]
-                
-            if xyz[i][1] == data_copy[d][3] and xyz[i][2] == data_copy[d][14]:
-                data_copy[d][3] = xyz[i][0]
-                
-            if xyz[i][1] == data_copy[d][4] and xyz[i][2] == data_copy[d][15]:
-                data_copy[d][4] = xyz[i][0] 
-                
-            if xyz[i][1] == data_copy[d][5] and xyz[i][2] == data_copy[d][16]:
-                data_copy[d][5] = xyz[i][0] 
-    
 
-    file = open(path_2, 'w')
-    file.write(str(f'{len(xyz)}\n'))
-    file.write(str('#\tx\ty\tz\n')) 
-    for item in xyz:
-        file.write(f'{float(item[1]):.2f}\t{float(item[2]):.2f}\t{float(item[3]):.2f}\n')
+    
         
-    file.write(str(f'{len(data_copy)}\n'))
+def Rec_PyGimli_v2(path, data):
     
-    
-    
-    
-    if data_copy[0][2] == 99999.999:
-        
-        file.write(str('#\ta\tm\tn\tR\n'))
-        for item in data_copy:
-            file.write(f'{int(item[3])}\t{int(item[4])}\t{int(item[5])}\t{float(item[1]):.3f}\n')
-    
-    elif data_copy[0][3] == 99999.999:
-        
-        file.write(str('#\ta\tm\tn\tR\n'))
-        for item in data_copy:
-            file.write(f'{int(item[2])}\t{int(item[4])}\t{int(item[5])}\t{float(item[1]):.3f}\n')
-        
-    else:
-        file.write(str('#\ta\tb\tm\tn\tR\n'))
-        for item in data_copy:
-            file.write(f'{int(item[2])}\t{int(item[3])}\t{int(item[4])}\t{int(item[5])}\t{float(item[1]):.3f}\n')
+    pass
+    #надо отсортировать двумерный массив и переобозначить метры на номера электродов
+    meters = []
+
+    for item in data:
+        if item[2] != 99999.999:
+            item[2] = item[2] + 0.1
+            item[13] = item[13] + 0.1
+            meters.append([item[2], item[13]] )
+
+    for item in data:
+        if item[3] != 99999.999:
+            item[3] = item[3] + 0.1
+            item[14] = item[14] + 0.1
+            meters.append([item[3], item[14]] )
             
+    for item in data:
+        if item[4] != 99999.999:
+            item[4] = item[4] + 0.1
+            item[15] = item[15] + 0.1
+            meters.append([item[4], item[15]] )
+        
+    for item in data:
+        if item[5] != 99999.999:
+            item[5] = item[5] + 0.1
+            item[16] = item[16] + 0.1
+            meters.append([item[5], item[16]] )       
             
-        
-    file.write(str('0'))
+    # Преобразуем каждый внутренний список в кортеж (tuple)
+    unique_meters = list(set(tuple(row) for row in meters))
     
+    # Преобразуем обратно в списки
+    unique_meters = [list(row) for row in unique_meters]   
+
+    sorted_unique_meters = sorted(unique_meters, key=lambda x: (x[0], x[1]))
+
+    '''
+    Итоговая сортировка
+    10 20
+    9 19
+    8 18
+    7 17
+    6 16
+    5 15
+    4 14
+    3 13
+    2 12
+    1 11 ... 
+    
+    '''
+
+    
+    i = 1
+    for item in sorted_unique_meters:
+        item.append(i)
+        i+=1
         
+        #print(item)
+
+    #меняем метры на электроды
+    for item in data: 
+        for item_2 in sorted_unique_meters:
+            
+            if item[2] == item_2[0] and item[13] == item_2[1]:
+                item[2] = item_2[2]
+                
+            
+            if item[3] == item_2[0] and item[14] == item_2[1]:
+                item[3] = item_2[2]         
+                
+            
+            if item[4] == item_2[0] and item[15] == item_2[1]:
+                item[4] = item_2[2]         
+                
+
+            if item[5] == item_2[0] and item[16] == item_2[1]:
+                item[5] = item_2[2]
+                
+                
+    for item in data:
+        if item[2] == 99999.999:
+            item[2] = 0
+            item[13] = 0
+            
+        if item[3] == 99999.999:
+            item[3] = 0
+            item[14] = 0      
+    
+    file = open(path, "w")
+    str_head = str(int(sorted_unique_meters[-1][2])) + '# Number of electrodes\n#x\ty\tz\n'
+    str_head_data = str(len(data)) + '# Number of data\n#a\tb\tm\tn\tr\tu\ti\tk\trhoa\n'
+    file.write(str_head) #заголовок электродов
+
+    for item in sorted_unique_meters:
+        item[0] = round(item[0] - 0.1, 2)
+        item[1] = round(item[1] - 0.1, 2)
         
-        
-        
-        
+        file.write(f'{float(item[0])}\t{float(item[1])}\t0.0\n')
+    
+    file.write(str_head_data) #заголовок данных
+    
+    for item in data:
+        r = item[8]/item[9]
+        file.write(f'{int(item[2])}\t{int(item[3])}\t{int(item[4])}\t{int(item[5])}\t{r}\t{item[8]}\t{item[9]}\t{item[11]}\t{item[1]}\n')
+    file.close()  
+
+  
+
+
 #формат файла 
 # 0  1    2     3     4     5     6        7       8  9  10    11  12      13  14  15  16  
 # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny ...
         
         
         
+'''
+Образец записи pyGimli (чтоб не искать)
+19# Number of sensors 
+#x	z
+1	-23.0
+2	-22.0
+3	-21.0
+4	-20.0
+5	-19.0
+6	-18.0
+7	-17.0
+8	-16.0
+9	-15.0
+10	-14.0
+11	-13.0
+12	-12.0
+13	-11.0
+14	-10.0
+15	-9.0
+16	-8.0
+17	-7.0
+18	-6.0
+19	-5.0
+574# Number of data
+#a	b	m	n	r	k
+1	0	5	6	0.10160756501182033	251.32741228718345
+1	0	7	8	0.08160756501182033	527.7875658030853
+1	0	9	10	0.10293144208037826	904.7786842338604
+1	0	11	12	0.03304964539007092	1382.300767579509
+1	0	13	14	0.13037825059101654	1960.3538158400308
+1	0	15	16	0.014349881796690308	2638.9378290154264
+...
+
+'''
         
         
         

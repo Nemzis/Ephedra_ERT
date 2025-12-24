@@ -14,6 +14,7 @@ import tkinter as tk
 #Nuitka
 #MVC (Model-View-Controller)
 
+
 if __name__ == '__main__':
     
     # Создаем UI
