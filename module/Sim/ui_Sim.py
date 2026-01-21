@@ -6,6 +6,8 @@ Created on Fri Mar 21 17:20:08 2025
 '''
 
 
+#Нужно переименовать в VolDiff
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -38,7 +40,7 @@ class Sim:
         a = 0
         w = 20
         
-        label = tk.Label(self.sim_body_tab, text='Сравнение моделей методом Sim (V 0.3.2 2025)')
+        label = tk.Label(self.sim_body_tab, text='Сравнение моделей (VolDiff version 0.3.2 2025)')
         label.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, columnspan=50,  sticky='nw')
         a += 1
 

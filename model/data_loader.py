@@ -77,6 +77,7 @@ def mass_load_files (path_f):
             c += 1
             
         i -= 1
+        
     return array, a, b, c, SP
 
 

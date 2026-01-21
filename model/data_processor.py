@@ -206,7 +206,7 @@ def Rok_3D2D (array, type_array):
         a = array[i][9]
         
        
-        if type_array == 'Pole-Dipole':
+        if type_array == 'Pole-Dipole' or type_array == 'Pole_dipole_L_sistem' or type_array == 'Pole_dipole_X_sistem':
             #pole-dipole
             #x = MN/2
             #z = AO/3
@@ -214,7 +214,7 @@ def Rok_3D2D (array, type_array):
             y = (array[i][15] + array[i][16])/2
             z = -((x - array[i][2])**2 + (y - array[i][13])**2)**(0.5)/3
 
-        elif type_array == 'Dipole-Dipole':
+        elif type_array == 'Dipole-Dipole' or type_array == 'Dipole-Dipole_X_sistem' or type_array ==  'Dipole-Dipole_L_sistem':
             #dipole-dipole
             #x = (B+M)/2
             #z = OO`/2  

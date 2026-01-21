@@ -151,7 +151,7 @@ class DataTab:
         self.customer_frame_plot.grid(row=0, column=4, rowspan = 2, padx=10, pady=10, sticky='nsew')
         
 
-        self.param_plot = ttk.Combobox(self.customer_frame_plot, values=['A', 'B', 'M', 'N', 'Rho(Omm)/V(mV)'])
+        self.param_plot = ttk.Combobox(self.customer_frame_plot, values=['A', 'B', 'M', 'N', 'V(mV)/Rho(Omm)'])
         self.param_plot.grid(row=0, column=0, padx=5, pady=5, sticky='wn')
         self.param_plot.current(0)  # Устанавливаем значение по умолчанию (Rho)
         
@@ -304,7 +304,7 @@ class DataTab:
         elif self.param_plot.get() == 'N':
             a = 5
             b = 16
-        elif self.param_plot.get() == 'Rho(Omm)/V(mV)':
+        elif self.param_plot.get() == 'V(mV)/Rho(Omm)':
             a = 1
             b = 8
 

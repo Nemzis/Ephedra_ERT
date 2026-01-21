@@ -5,6 +5,7 @@ Created on Tue Mar  4 02:19:56 2025
 @author: Vladimir
 '''
 
+#Нужно переименовать в IPCalc
 
 #       (M)            
 # 0  1   2     3     4     5     6        7         8  9  10    11  12      13  14  15  16 17  
@@ -55,7 +56,7 @@ class Komarov_SP:
         a = 0
         w = 20
 
-        label = tk.Label(self.komarov_body_tab, text='Вызванная поляризация методом Комарова (V 1.4.3 2025)')
+        label = tk.Label(self.komarov_body_tab, text='Вызванная поляризация методом Комарова (IPCalc version: 1.4.3 2025)')
         label.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, columnspan=50,  sticky='nw')
         a += 1
 
@@ -438,7 +439,6 @@ mnB
 внутри сортировка с минимального сверху вниз 
 
 внутри .dat после кс SP и Ox и AO или OB 
-
 
 '''
 

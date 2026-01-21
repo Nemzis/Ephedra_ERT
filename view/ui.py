@@ -52,7 +52,7 @@ class UI:
     
         # Создаем вкладку модуля Sim
         Sim_tab_instance = Sim(self.notebook, self)
-        self.notebook.add(Sim_tab_instance.get_frame(), text='Сравнение моделей Sim')
+        self.notebook.add(Sim_tab_instance.get_frame(), text='VolDiff')
   
     
         
