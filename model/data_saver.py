@@ -12,15 +12,20 @@ def REC_in_files_for_INV(path, array, zagolovok_file):
     #формат файла 
     # 0  1    2     3     4     5     6        7       8  9  10    11  12      13  14  15  16  
     # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny ...
+    
+    
+    array_copy = copy.deepcopy(array)
 
-    for i in range(len(array)):
-        array[i] = list(map(str, array[i]))
+
+    for i in range(len(array_copy)):
+        array_copy[i] = list(map(str, array_copy[i]))
 
 
+    #высчитываем шаг между электродами
     all_X2 = list()
     all_Y2 = list()
     
-    for item in array:
+    for item in array_copy:
         
         x1 = float(item[4])
         x2 = float(item[5])
@@ -39,52 +44,61 @@ def REC_in_files_for_INV(path, array, zagolovok_file):
     
     b = (all_X2[2]-all_X2[1])/2
     
-    array_X = []
+    
+    array_copy_X = []
     i = all_X2[0]
     
     while i <= all_X2[-1]:
-        array_X.append(i)
+        array_copy_X.append(i)
         i += b
         
         
-    array_Y = []
+    array_copy_Y = []
     i = all_Y2[0]
     
     while i <= all_Y2[-1]:
-        array_Y.append(i)
+        array_copy_Y.append(i)
         i += b
          
     file = open(path, 'w')
     file.write(str(zagolovok_file) + ('\n')) #заголовок
-    file.write(f'{len(array_X)}\n')
-    file.write(f'{len(array_Y)}\n')
+    file.write(f'{len(array_copy_X)}\n')
+    file.write(f'{len(array_copy_Y)}\n')
     file.write(str('Nonuniform grid\n'))
     file.write(str('X-location of grid lines\n'))
 
-    for item in array_X:
+    for item in array_copy_X:
         file.write(f'{item}\t')
     
     file.write(str('\nY-location of grid lines\n'))
 
-    for item in array_Y:
+    for item in array_copy_Y:
         file.write(f'{item}\t')
 
     file.write(str('\n11\n'))
     file.write(str('0\n'))
-    file.write(str('Type of data (0=apparent resistivity,1=resistance)\n'))
-    file.write(str('0\n'))
-    file.write(str(len(array)) + ('\n'))
+    file.write(str('Type of data (0 = apparent resistivity, 1=resistance)\n'))
+    file.write(str('1\n'))
+    file.write(str(len(array_copy)) + ('\n'))
 
-    for item in array:
-        if array[0][2] != '99999.999' and array[0][3] != '99999.999':
-            file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
+
+
+    for item in array_copy:
+        if item[2] != '99999.999' and item[3] != '99999.999':
+            #file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
+            file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{float(item[8])/float(item[9])}\n')
+            
+            
+        else:
+            #file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
+            file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{float(item[8])/float(item[9])}\n')
     
-    for item in array:
-        if array[0][2] == '99999.999' or array[0][3] == '99999.999':
-            file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
-    
+        
+        
+        
     file.write(str('0\n0\n0\n0\n0\n0'))
     file.close()
+    
     
     
     
@@ -286,7 +300,8 @@ def Rec_PyGimli_v2(path, data):
 1	0	11	12	0.03304964539007092	1382.300767579509
 1	0	13	14	0.13037825059101654	1960.3538158400308
 1	0	15	16	0.014349881796690308	2638.9378290154264
-...
+... .. 
+
 
 '''
         

@@ -48,5 +48,15 @@ if __name__ == '__main__':
 ближашая разработка модулей:
     сборка профилей вместе по координатам
     
+   
+
+GIT
+cd C:/Users/nemzi/.spyder-py3/Ephedra_ERT
+git status
+git add .
+
+git commit -m "коммит"
+
+git push
 
 '''
