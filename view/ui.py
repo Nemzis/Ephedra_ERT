@@ -18,7 +18,7 @@ class UI:
         self.root.title('Ephedra_ERT v2.3.2 2025')
         
         # Устанавливаем минимальные размеры окна
-        self.root.minsize(width=850, height=600)  # Минимальная ширина 600, высота 400
+        self.root.minsize(width=850, height=700)
         
         # Создаем Notebook (контейнер для вкладок)
         self.notebook = ttk.Notebook(self.root)

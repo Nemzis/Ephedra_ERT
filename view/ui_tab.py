@@ -27,6 +27,8 @@ class DataTab:
         self.array_post_filter = list()
         #эта хрень должна быть последней
         self.frame = self.create_data_tab()
+        
+        self.save_mode = tk.StringVar(value='rho')
 
 
     def create_data_tab(self):
@@ -37,44 +39,47 @@ class DataTab:
 
         w = 20 #общая ширина кнопок
         
-        self.button_safe_all = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл (Res3Dinv)', command = self.safe_data)
-        self.button_safe_all.grid(row=0, column=0, pady = 5, padx = 5, sticky='nsew')
+        #стиль, может ешё и не пригодится, посмотрим
+        style = ttk.Style()
+        style.configure("Small.TButton", padding=1,  font=('Arial', 8))
+        
+        
+        #шестеренка
+        #self.icon_gear = tk.PhotoImage(file='icon/gear.png')
+        #self.icon_gear = self.icon_gear.subsample(2, 2) #уменьшение иконки
+        #шестеренка для настроек сохранения
+        #self.button_safe_all = ttk.Button(self.body_tab, style="Small.TButton", width=1, text = '!?', image=self.icon_gear, command=self.open_save_settings)
+        #self.button_safe_all.grid(row=0, column=0, sticky='e')
+        
+        
+        self.customer_frame = tk.LabelFrame(self.body_tab, text='Сохранение:')
+        self.customer_frame.grid(row=0, rowspan = 4, column=0, padx=5, pady=5, sticky='nsew')
+        
+        
+        self.button_safe_all = ttk.Button(self.customer_frame, width=w, text = 'Res3Dinv', command = self.open_save_settings)
+        self.button_safe_all.grid(row=0, column=0,  pady = 5, padx = 5, sticky='w')
+        
         
 
-        self.button_safe_rho = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл XYZR', state='normal', command = self.safe_xyz_rho)
-        self.button_safe_rho.grid(row=1, column=0, pady = 5, padx = 5, sticky='nsew')
+        self.button_safe_rho = ttk.Button(self.customer_frame, width=w, text = 'XYZ Rho', state='normal', command = self.safe_xyz_rho)
+        self.button_safe_rho.grid(row=1, column=0, pady = 5, padx = 5, sticky='w')
         
 
         if self.type_array == 'all_data':
             self.button_safe_rho.config(state='disabled')
             
             
-        self.button_safe_rho = ttk.Button(self.body_tab, width=25, text = 'Сохранить файл PyGimli', command = self.safe_PyGimli)
-        self.button_safe_rho.grid(row=2, column=0, pady = 5, padx = 5, sticky='nsew')
+        self.button_safe_rho = ttk.Button(self.customer_frame, width=w, text = 'PyGimli', command = self.safe_PyGimli)
+        self.button_safe_rho.grid(row=2, column=0, pady = 5, padx = 5, sticky='w')
             
-        open_apply = ttk.Button(self.body_tab, width=25, text='Восстановить исходный\nмассив', command = self.recovery_filter )
-        open_apply.grid(row=3, column=0, padx = 5, pady = 5,  sticky='nsew')
-            
-
-       
-        # -----------------------------------------------------------
-        self.customer_frame = tk.LabelFrame(self.body_tab, text='Сохранение Файла')
-        self.customer_frame.grid(row=4, rowspan = 4, column=0, padx=5, pady=5, sticky='nsew')
         
-        # Поле ввода для заголовка файла
-        label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
-        label_zagolovok.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
-        
-        self.entry_zagolovok = tk.Entry(self.customer_frame, width=15)
-        self.entry_zagolovok.grid(row=1, column=0, sticky='w', pady = 5, padx = 5)
-        self.entry_zagolovok.insert(0, 'Test')
         
 
-        
-    
+
+
         # -----------------------------------------------------------
         self.customer_frame_filter = tk.LabelFrame(self.body_tab, text='Фильтр по диапазону')
-        self.customer_frame_filter.grid(row=8, column=0, rowspan = 8, padx=10, pady=10, sticky='nsew')
+        self.customer_frame_filter.grid(row=8, column=0, rowspan = 40, padx=10, pady=10, sticky='nsew')
         
         
         label_Rho_min = tk.Label(self.customer_frame_filter, text='Минимум')
@@ -91,13 +96,17 @@ class DataTab:
         
         
         open_rasschet = ttk.Button(self.customer_frame_filter, width = w, text='Рассчитать', command = self.filter_data)
-        open_rasschet.grid(row=4, column=0, padx = 5, pady = 5, sticky='nsew')
+        open_rasschet.grid(row=4, column=0, padx = 5, pady = 5, sticky='w')
         
         open_sbros = ttk.Button(self.customer_frame_filter, width = w, text='Сбросить', command = self.reset_filter)
-        open_sbros.grid(row=5, column=0, padx = 5, pady = 5, sticky='nsew')
+        open_sbros.grid(row=5, column=0, padx = 5, pady = 5, sticky='w')
         
         open_apply = ttk.Button(self.customer_frame_filter, width = w, text='Применить', command = self.apply_filter)
-        open_apply.grid(row=6, column=0, padx = 5, pady = 5, sticky='nsew')
+        open_apply.grid(row=6, column=0, padx = 5, pady = 5, sticky='w')
+        
+                
+        open_apply = ttk.Button(self.customer_frame_filter, width=w, text='   Восстановить\n исходный массив', command = self.recovery_filter )
+        open_apply.grid(row=7, column=0, padx = 5, pady = 5,  sticky='w')
         
 
         
@@ -424,12 +433,10 @@ class DataTab:
         if path:
             array = self.data  # Данные для сохранения
             
-            # Вызываем метод контроллера для сохранения данных
-            
+            # Вызываем метод контроллера для сохранения данных  
             
             self.controller.processing_xyzrho(array, self.type_array, path)
-            
-            
+                  
             self.ui.update_message(f'Файл {self.type_array} сохранен: {path}')  # Сообщение об успешном сохранении
         else:
             self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
@@ -439,10 +446,13 @@ class DataTab:
     
     
     
-    # -----------------------------------------------------------
+    # Res3Dinv-----------------------------------------------------------
     def safe_data(self):
         # Получаем значения из полей ввода
         zagolovok_file = self.entry_zagolovok.get()  # Заголовок файла
+        
+        save_mode = self.save_mode.get()
+        
         
         #Открываем диалоговое окно для выбора места сохранения
         path = filedialog.asksaveasfilename(
@@ -453,13 +463,141 @@ class DataTab:
         if path:
             array = self.data  # Данные для сохранения
             # Вызываем метод контроллера для сохранения данных
-            self.controller.safe_data(path, array, zagolovok_file)
+            self.controller.safe_data(path, array, zagolovok_file, save_mode)
             self.ui.update_message(f'Файл сохранен: {path}')  # Сообщение об успешном сохранении
         else:
             self.ui.update_message('Сохранение отменено')  # Сообщение, если пользователь отменил сохранение
 
+    
+    #Кнопка сохранерия Res3Dinv
+    
+    def on_save_mode_changed(self):
+        if self.save_mode.get() == 'rho':
+            self.ui.update_message ('В файл будет записано Кажущееся сопротивление')
+        else:
+            self.ui.update_message ('В файл будет записано resistance (V/I)')
+        
+    
+    
+    def open_save_settings(self):
+        # Если окно уже открыто — просто поднять
+        if hasattr(self, 'settings_window') and self.settings_window.winfo_exists():
+            self.settings_window.lift()
+            return
+    
+        # --- координаты кнопки (шестерёнки) ---
+        btn_x = self.button_safe_all.winfo_rootx()
+        btn_y = self.button_safe_all.winfo_rooty()
+        btn_w = self.button_safe_all.winfo_width()
+        #btn_h = self.button_safe_all.winfo_height()
+        
+        # Позиция окна (справа от кнопки)
+        win_x = btn_x + btn_w + 5
+        win_y = btn_y
+    
+        # --- окно ---
+        self.settings_window = tk.Toplevel(self.body_tab)
+        self.settings_window.title('Настройки сохранения')
+        self.settings_window.geometry(f'460x250+{win_x}+{win_y}')
+        self.settings_window.resizable(False, False)
+    
+        self.settings_window.transient(self.body_tab)
 
+    
+        # ---------- содержимое ----------
+        frame = ttk.Frame(self.settings_window, padding=10)
+        frame.pack(fill='both', expand=True)
+    
+        ttk.Label(
+            frame,
+            text='Параметры сохранения',
+            font=('TkDefaultFont', 10, 'bold')
+        ).pack(anchor='w', pady=(0, 8))
+    
+    
+        # ---- блок заголовка файла ----
+        file_frame = ttk.LabelFrame(frame)
+        file_frame.pack(fill='x', pady=8)
+        
+        
+        ttk.Label(
+            file_frame,
+            text='Заголовок Res3Dinv:'
+        ).grid(row=0, column=0, sticky='w', padx=5, pady=3)
+        
+        self.entry_zagolovok = ttk.Entry(file_frame, width=20)
+        self.entry_zagolovok.grid(row=1, column=0, sticky='w', padx=5, pady=3)
+        
+        self.entry_zagolovok.insert(0, 'Title in the file')
 
+        
+
+        self.var_add_header = tk.BooleanVar(value=True)
+        
+           
+        ttk.Radiobutton(
+            frame,
+            text='Сохранять кажущееся сопротивление',
+            variable=self.save_mode,
+            value='rho',
+            command=self.on_save_mode_changed
+        ).pack(anchor='w')
+        
+        ttk.Radiobutton(
+            frame,
+            text='Сохранять resistance (V/I)',
+            variable=self.save_mode,
+            value='resistance',
+            command=self.on_save_mode_changed
+        ).pack(anchor='w')
+    
+    
+    
+        '''
+        ttk.Checkbutton(
+            frame,
+            text='Добавлять заголовок',
+            variable=self.var_add_header
+        ).pack(anchor='w')
+        '''
+    
+
+        
+        '''
+        ttk.Button(
+            buttons_frame,
+            text='Закрыть',
+            command=self.settings_window.destroy
+        ).pack(side='right', padx=5)
+        '''
+        
+
+        '''
+        # Поле ввода для заголовка файла
+        label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
+        label_zagolovok.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
+        
+        self.entry_zagolovok = tk.Entry(self.customer_frame, width=15)
+        self.entry_zagolovok.grid(row=1, column=0, sticky='w', pady = 5, padx = 5)
+        self.entry_zagolovok.insert(0, 'Test')
+        '''
+        
+
+        
+
+        # ---- разделитель ----
+        ttk.Separator(frame).pack(fill='x', pady=5)
+    
+        # ---- фрейм для кнопок ----
+        buttons_frame = ttk.Frame(frame)
+        buttons_frame.pack(fill='x', pady=5)
+        
+        ttk.Button(
+            buttons_frame,
+            text='Сохранить',
+            command=self.safe_data
+        ).pack(side='left', padx=5)
+                        
 
 
     def get_frame(self):

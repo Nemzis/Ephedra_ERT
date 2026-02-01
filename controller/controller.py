@@ -92,8 +92,8 @@ class Controller:
         return ds.Rec_PyGimli_v2(path, data)
         
     
-    def safe_data(self, path, array, zagolovok_file):
-        return ds.REC_in_files_for_INV(path, array, zagolovok_file)
+    def safe_data(self, path, array, zagolovok_file, save_mode):
+        return ds.REC_in_files_for_INV(path, array, zagolovok_file, save_mode)
     
     
     #-----------------------------------------------------работа с модулем Sim

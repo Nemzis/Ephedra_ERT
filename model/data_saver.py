@@ -7,11 +7,13 @@ Created on Wed Feb 26 01:50:58 2025
 import copy
 
 
-def REC_in_files_for_INV(path, array, zagolovok_file):
+def REC_in_files_for_INV(path, array, zagolovok_file, save_mode):
     #Путь, массив, заголовок, половина расстояния между электродами
     #формат файла 
     # 0  1    2     3     4     5     6        7       8  9  10    11  12      13  14  15  16  
     # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny ...
+    
+    print (save_mode)
     
     
     array_copy = copy.deepcopy(array)
@@ -78,21 +80,32 @@ def REC_in_files_for_INV(path, array, zagolovok_file):
     file.write(str('\n11\n'))
     file.write(str('0\n'))
     file.write(str('Type of data (0 = apparent resistivity, 1=resistance)\n'))
-    file.write(str('1\n'))
+    
+    if save_mode == 'rho':
+        file.write(str('0\n'))
+    else:
+        file.write(str('1\n'))
+    
+    
+    
+    
     file.write(str(len(array_copy)) + ('\n'))
 
 
 
-    for item in array_copy:
-        if item[2] != '99999.999' and item[3] != '99999.999':
-            #file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
-            file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{float(item[8])/float(item[9])}\n')
-            
-            
-        else:
-            #file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
-            file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{float(item[8])/float(item[9])}\n')
-    
+    if save_mode == 'rho':
+        for item in array_copy:
+            if item[2] != '99999.999' and item[3] != '99999.999':
+                file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
+            else:
+                file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{item[1]}\n')
+               
+    else:
+        for item in array_copy:
+            if item[2] != '99999.999' and item[3] != '99999.999':
+                file.write(f'4\t{item[2]},\t{item[13]}\t{item[3]},\t{item[14]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{float(item[8])/float(item[9])}\n')
+            else:
+                file.write(f'3\t{item[2]},\t{item[13]}\t{item[4]},\t{item[15]}\t{item[5]},\t{item[16]}\t{float(item[8])/float(item[9])}\n')
         
         
         
