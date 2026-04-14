@@ -38,7 +38,6 @@ class Komarov_SP:
         self.file_extension_high = '2'
 
         # Инициализация переменных для чекбоксов
-
         self.sp100 = tk.IntVar()
 
         # Загружаем состояния чекбоксов
@@ -112,7 +111,7 @@ class Komarov_SP:
         
         checkbutton_100 = tk.Checkbutton(
             self.komarov_body_tab,
-            text='+100 к рассчетным данным',
+            text='+100 к рассчетным данным (при сохранении)',
             variable=self.sp100
         )
         checkbutton_100.grid(row=a, column=0, padx=0, pady=0, columnspan=50, sticky='nw')
@@ -293,8 +292,13 @@ class Komarov_SP:
                 
             a = len(self.array_low) - len(self.result_data)
             b = len(self.array_high) - len(self.result_data)
-            self.label_text_result['text'] = f'Разница между результатом и массивом low - {a}, и массивом high - {b}'
-            self.ui.update_message(f'Рассчет выполнен {len(self.result_data)}')
+            
+            if len(self.result_data) == 0:
+                self.ui.update_message(f'Результат рассчета равен {len(self.result_data)}, что-то пошло не так, сохранять нечего')
+            else:
+                
+                self.label_text_result['text'] = f'Разница между результатом и массивом low - {a}, и массивом high - {b}'
+                self.ui.update_message(f'Рассчет выполнен {len(self.result_data)}')
         
         else:
             self.ui.update_message('Файлы разных форматов!')

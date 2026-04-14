@@ -11,9 +11,10 @@ Created on Fri Mar 21 17:20:08 2025
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+import math
 import json
 import os
-
+import copy 
 
 
 class Sim:
@@ -29,6 +30,19 @@ class Sim:
         self.array_1 = list()
         self.array_2 = list()
         
+        
+        # Инициализация переменных для чекбоксов
+        self.sim100 = tk.IntVar()
+        self.sim_log = tk.IntVar()
+        
+        
+        # Загружаем состояния чекбоксов
+        self.state = self.load_state()
+        self.sim100.set(self.state.get('check2', 0))  # По умолчанию 0, если ключа нет
+        
+        self.sim_log.set(self.state.get('check3', 0))  # По умолчанию 0, если ключа нет
+        
+        
         # Создаем интерфейс
         self.frame = self.create_sim_tab()
 
@@ -40,7 +54,7 @@ class Sim:
         a = 0
         w = 20
         
-        label = tk.Label(self.sim_body_tab, text='Сравнение моделей (VolDiff version 0.3.2 2025)')
+        label = tk.Label(self.sim_body_tab, text='Сравнение моделей (VolDiff version v0.3.3 2026)')
         label.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, columnspan=50,  sticky='nw')
         a += 1
 
@@ -68,7 +82,7 @@ class Sim:
         open_button_ask.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='nw')
         a += 1
         
-        self.label_text_info = tk.Label(self.sim_body_tab, text='Основная формула ((A-B)*100/B)+100')
+        self.label_text_info = tk.Label(self.sim_body_tab, text='Основная формула (A-B)*100/B')
         self.label_text_info.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, columnspan=50, sticky='w')
         a += 1
         
@@ -91,6 +105,31 @@ class Sim:
         b += 1
 
 
+        # Создаем чекпоинты
+        
+        
+        
+        checkbutton_log = tk.Checkbutton(
+            self.sim_body_tab,
+            text='Использовать логарифм значений для рассчета',
+            variable=self.sim_log
+        )
+        checkbutton_log.grid(row=a, column=0, padx=0, pady=0, columnspan=50, sticky='nw')
+        a += 1
+        
+        
+        
+        checkbutton_100 = tk.Checkbutton(
+            self.sim_body_tab,
+            text='+100 к рассчетным данным (при сохранении)',
+            variable=self.sim100
+        )
+        checkbutton_100.grid(row=a, column=0, padx=0, pady=0, columnspan=50, sticky='nw')
+        a += 1
+        
+        
+
+        
         return self.sim_body_tab
     
     
@@ -109,7 +148,12 @@ class Sim:
         
         try:
             if self.filepath_1 != self.filepath_2:
-                self.array_1 = self.ui.controller.load_file(self.filepath_1)
+                self.array_1 = self.ui.controller.load_file_simple(self.filepath_1)
+                
+
+
+
+                
                 self.label_text_load_1['text'] = (f'{self.filepath_1}')
                 self.ui.update_message(f'Первый массив загружен длина {len(self.array_1)}')
             else:
@@ -129,9 +173,12 @@ class Sim:
         
         try:
             if self.filepath_1 != self.filepath_2:
-                self.array_2 = self.ui.controller.load_file(self.filepath_2)
+                self.array_2 = self.ui.controller.load_file_simple(self.filepath_2)
                 self.label_text_load_2['text'] = (f'{self.filepath_2}')
                 self.ui.update_message(f'Первый массив загружен длина {len(self.array_2)}')
+                
+                
+
             else:
                 self.ui.update_message('Один и тот же файл')
         except Exception as e:
@@ -151,6 +198,9 @@ class Sim:
 
     
     def proccesing(self):
+        
+       
+        
         self.result_data = []  # Очищаем результаты перед расчётом
         tolerance = 0.001  # Допустимая погрешность при сравнении координат
         
@@ -162,20 +212,32 @@ class Sim:
                     abs(point1[2] - point2[2]) < tolerance):
                     
                     try:
-                        value1 = point1[3]
-                        value2 = point2[3]
                         
-                        # Альтернативная формула - уточните вашу математику
+                        if self.sim_log.get() == 1:
+                            
+                            value1 = math.log10(point1[3])
+                            value2 = math.log10(point2[3])
+                        else:
+                            value1 = point1[3]
+                            value2 = point2[3]                       
+                        
+                        
                         if abs(value2) > tolerance:  # Избегаем деления на ноль
-                            result = ((value1 - value2) / value2) * 100 + 100
+                            result = (value1 - value2)*100 / value2
                             self.result_data.append([
                                 point1[0], 
                                 point1[1], 
                                 point1[2], 
                                 result
                             ])
+                            
+                        break  # нашли пару — выходим из внутреннего цикла  
+                      
                     except (ValueError, ZeroDivisionError):
                         continue
+                    
+                    
+
         
         a = len(self.array_1) - len(self.result_data)
         b = len(self.array_2) - len(self.result_data)
@@ -192,11 +254,29 @@ class Sim:
             title='Сохранить файл') #Заголовок
         
         
-        if path:
-            self.ui.controller.save_file(path, self.result_data)
-            self.ui.update_message(f'Сохранение выполнено, длина массива {len(self.result_data)}')
+        
+        self.result_data_copy = copy.deepcopy(self.result_data)
+        
+        
+        if self.sim100.get() == 0:
+
+            if path:
+                self.ui.controller.save_file(path, self.result_data)
+                self.ui.update_message(f'Сохранение выполнено, длина массива {len(self.result_data)}')
+            else:
+                self.ui.update_message('Не выбрано место сохранения')
+            
         else:
-            self.ui.update_message('Не выбрано место сохранения')
+            
+            plus = 100
+            for item in self.result_data_copy:
+                item[3] = item[3] + plus
+        
+            if path:
+                self.ui.controller.save_file(path, self.result_data_copy)
+                self.ui.update_message(f'Сохранение выполнено, длина массива {len(self.result_data)}')
+            else:
+                self.ui.update_message('Не выбрано место сохранения')
     
         
     
@@ -217,8 +297,27 @@ class Sim:
         
         
         
+    def load_state(self):
+        '''Загружает состояния чекбоксов из файла.'''
+        try:
+            settings_path = os.path.join('module/Sim', 'settings.json')
+            if os.path.exists(settings_path):
+                with open(settings_path, 'r', encoding='utf-8') as file:
+                    return json.load(file)
+            else:
+                self.ui.update_message('Файл настроек не найден, используются значения по умолчанию.')
+                return {'check2': 0, 'check3': 0}
+        except Exception as e:
+            self.ui.update_message(f'Ошибка при загрузке состояний: {e}')
+            return {'check2': 0, 'check3': 0}
         
         
+    def on_closing(self):
+        '''Обрабатывает закрытие окна.'''
+        self.state = {'check2': self.sim100.get()}
+        self.state = {'check3': self.sim_log.get()}
+        self.save_state(self.state)       
+       
         
         
         

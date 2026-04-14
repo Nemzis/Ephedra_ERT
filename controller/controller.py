@@ -20,34 +20,33 @@ class Controller:
     def process_files(self, input_dir):
 
         # Чтение файлов
-        self.data, n_file, error_AB, error_MN, SP  = dl.mass_load_files(input_dir)
+        self.data, n_file, error_AB, error_MN, error_null_rho, SP  = dl.mass_load_files(input_dir)
         
         
         # Обновляем сообщение в UI
         self.ui.update_message(f'{len(self.data)} - количество строчек, {n_file} - файлов\n'\
-                               f'Удалены ошибки: {error_AB} - A and B = 99999.999, {error_MN} - M or N = 99999.999,\n'\
+                               f'Удалены ошибки: {error_AB} - A and B = 99999.999, {error_MN} - M or N = 99999.999, {error_null_rho} - Rho = 0\n'\
                                f'{SP}')
+          
+            
+        self.SP = SP #сохраняем тут для работы в других местах
         
-
         
-    def processing_file(self, x, y, r):
-        #Вызывает функцию separator для разделения данных.
-
-        if not self.data:
-            self.ui.update_message('Данные не загружены.')
-        
-        # Вызываем функцию separator
-        pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole,\
-            dipole_dipole_L_sistem, dipole_dipole_X_sistem, pl_messege, schlumberger = dp.separator(self.data, x ,y, r)
-        
-        return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole,\
-            dipole_dipole_L_sistem, dipole_dipole_X_sistem, pl_messege, schlumberger, self.data
+        # self.SP значения: 'Данные без ВП' 'Данные с ВП'
+        return self.data, SP
+    
+    
+ 
+    
+    def processing_file(self, data):
+        return dp.separator(data)
+          
     
     
     
     def get_histogram(self, data, a, title):
         #Возвращает гистограмму для данных.
-        return dp.gistogramma(data, a, title)
+        return dp.gistogramma(data, a, title, self.SP)
     
 
 
@@ -100,6 +99,15 @@ class Controller:
     def load_file(self, path):
         array, head = dl.load_file(path)
         return array, head
+    
+    
+    
+    def load_file_simple(self, path):
+        array = dl.load_file_simple(path)
+        return array
+      
+    
+
     
     
     def save_file(self, path, array):

@@ -4,6 +4,7 @@ Created on Wed Feb 26 01:49:21 2025
 
 @author: Vladimir
 '''
+import math #мат библиотека
 
 # 0 1    2    3     4     5     6        7         8  9  10    11  12      13  14  15  16  
 # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
@@ -40,7 +41,7 @@ def mass_load_files (path_f):
         
     SP = 'Данные без ВП'
     if array[0][2] == 'M1':
-        SP = 'Данные с ВП, основная гармоника перенесена в конец массива'
+        SP = 'Данные с ВП'
         #номера гармоник в массиве
         list_SP = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
         array_SP = []
@@ -63,12 +64,16 @@ def mass_load_files (path_f):
     
     a = 0
     b = 0
-    c = 0 
+    c = 0
+    d = 0
     i = len(array)-1
     while i >= 0:
-        if array[i][1] == 'Rho':
+        if array[i][1] == 'Rho': #удаляем строковые строчки
             del array[i]
             a += 1
+        elif array[i][1] == 0: #удаляем нули кажущегося сопротивления
+            del array[i]
+            d += 1
         elif array[i][2] == 99999.999 and array[i][3] == 99999.999:
             del array[i]
             b += 1
@@ -76,9 +81,17 @@ def mass_load_files (path_f):
             del array[i]
             c += 1
             
+        
         i -= 1
         
-    return array, a, b, c, SP
+    
+    for item in array:
+        # c VP будет 17, без - 39
+        item.append(math.log10(item[1]))
+    
+    
+     
+    return array, a, b, c, d, SP
 
 
 
@@ -133,7 +146,28 @@ def load_file(path):
     return array, head
 
 
-
+#под стандартное чтение файла
+def load_file_simple(path):
+    array = []
+    
+    with open(path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line:  # Пропускаем пустые строки
+                continue
+                
+            # Разделяем строку, учитывая что разделитель может быть табуляцией или несколькими пробелами
+            parts = [p for p in line.replace('\t', ' ').split(' ') if p]
+            
+            try:
+                # Пытаемся преобразовать все части в float
+                row = list(map(float, parts))
+                array.append(row)
+            except (ValueError, IndexError):
+                # Пропускаем строки, которые не удалось преобразовать (заголовки и т.д.)
+                continue
+    
+    return array
 
 
 

@@ -15,10 +15,10 @@ class UI:
     def __init__(self, root, controller):
         self.controller = controller
         self.root = root
-        self.root.title('Ephedra_ERT v2.3.2 2025')
+        self.root.title('Ephedra_ERT v2.6.6 2026')
         
         # Устанавливаем минимальные размеры окна
-        self.root.minsize(width=850, height=700)
+        self.root.minsize(width=850, height=800)
         
         # Создаем Notebook (контейнер для вкладок)
         self.notebook = ttk.Notebook(self.root)
@@ -34,7 +34,7 @@ class UI:
         
         
     
-        self.message_area = tk.Text(self.message_frame, height=5, wrap=tk.WORD)
+        self.message_area = tk.Text(self.message_frame, height=8, wrap=tk.WORD)
         self.message_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     
     
@@ -81,23 +81,8 @@ class UI:
         menu_frame = tk.Frame(parent)
         menu_frame.grid(row=0, column=0, padx = 5, pady = 5, sticky='wn')
         
-        open_button = ttk.Button(menu_frame, text='Выбрать директорию\nс файлами', command = self.open_directory)
+        open_button = ttk.Button(menu_frame, text='Отркыть файлы', command = self.open_directory)
         open_button.grid(row=0, column=0, padx = 5, pady = 5, ipadx=5, ipady=5, sticky='nsew')
-        
-
-        #поле домножение шага
-        self.customer_frame_step = tk.LabelFrame(menu_frame, text='Множитель X Y R перед загрузкой')
-        self.customer_frame_step.grid(row=0, column = 2, rowspan = 3, padx=5, pady=5, sticky='nsew')
-        
-        self.entry_step_x = tk.Entry(self.customer_frame_step, width = 6)
-        self.entry_step_x.grid(row=0, column=2, sticky='wn', pady = 5, padx = 5)
-        
-        self.entry_step_y = tk.Entry(self.customer_frame_step, width = 6)
-        self.entry_step_y.grid(row=0, column=3, sticky='wn', pady = 5, padx = 5)
-        
-        self.entry_step_r = tk.Entry(self.customer_frame_step, width = 6)
-        self.entry_step_r.grid(row=0, column=4, sticky='wn', pady = 5, padx = 5)
-        
         
         
         # main
@@ -125,6 +110,7 @@ class UI:
         
     def open_directory(self):
         #Открывает директорию и создаёт вкладки с данными.
+        
         # Очищаем данные
         self.pole_dipole = list()
         
@@ -137,12 +123,8 @@ class UI:
         
         self.schlumberger = list()
         self.data = list()
-        
-        
-        x = self.entry_step_x.get()
-        y = self.entry_step_y.get()
-        r = self.entry_step_r.get()
-        
+         
+
         self.pl_messege = 0
     
         try:
@@ -153,7 +135,16 @@ class UI:
                 return
     
             self.input_dir.set(selected_dir)
-            self.controller.process_files(input_dir=selected_dir)
+            self.data, self.SP = self.controller.process_files(input_dir=selected_dir)
+            
+            
+            
+            
+            if not self.data:
+                self.update_message('Массив пуст — нечего обрабатывать')
+                return
+            
+            
     
             # Очищаем все существующие вкладки
             for tab_id in self.nested_notebook.tabs():
@@ -161,62 +152,72 @@ class UI:
     
             # Получаем данные
             try:
-                self.pole_dipole, self.pole_dipole_X_sistem, self.pole_dipole_L_sistem,\
-                    self.dipole_dipole, self.dipole_dipole_L_sistem, self.dipole_dipole_X_sistem,\
-                        self.schlumberger, self.pl_messege, self.data = self.controller.processing_file(x,y,r)
-                        
-                        
+                
+                
+                (
+                    self.pole_dipole,
+                    self.pole_dipole_X_sistem,
+                    self.pole_dipole_L_sistem,
+                    self.dipole_dipole,
+                    self.dipole_dipole_L_sistem,
+                    self.dipole_dipole_X_sistem,
+                    self.pl_messege,
+                    self.schlumberger
+                ) = self.controller.processing_file(self.data)
+                
     
                 # Создаём вкладки
                 if self.data:
                     body_tab_instance = DataTab(self.notebook, self, self.data, self.controller, 'all_data')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Весь Массив')
+                    
+    
     
                 if self.dipole_dipole:
                     body_tab_instance = DataTab(self.notebook, self, self.dipole_dipole, self.controller, 'Dipole-Dipole')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Dipole-Dipole')
+                    self.update_message(f'{len(self.dipole_dipole)} - Длина массива для дипольной установки')
+                    
                                       
                 if self.dipole_dipole_X_sistem:
                     body_tab_instance = DataTab(self.notebook, self, self.dipole_dipole_X_sistem, self.controller, 'Dipole-Dipole_X_sistem')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Dipole-Dipole_X_sistem')
+                    self.update_message(f'{len(self.dipole_dipole_X_sistem)} - Длина массива для дипольной установки, X-система')
+                    
                     
                 if self.dipole_dipole_L_sistem:
                     body_tab_instance = DataTab(self.notebook, self, self.dipole_dipole_L_sistem, self.controller, 'Dipole-Dipole_L_sistem')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Dipole-Dipole_L_sistem')
+                    self.update_message(f'{len(self.dipole_dipole_L_sistem)} - Длина массива для дипольной установки, L-система')
                     
 
-    
                 if self.schlumberger:
                     body_tab_instance = DataTab(self.notebook, self, self.schlumberger, self.controller, 'Schlumberge')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Schlumberge')
-    
+                    self.update_message(f'{len(self.schlumberger)} - Длина массива для установки Шлюмберже')
+                    
 
-    
                 if self.pole_dipole:
                     body_tab_instance = DataTab(self.notebook, self, self.pole_dipole, self.controller, 'Pole-Dipole')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Pole-Dipole')
+                    self.update_message(f'{len(self.pole_dipole)} - Длина массива для трехэлектродной установки')
+                    
                 
                 if self.pole_dipole_X_sistem:
                     body_tab_instance = DataTab(self.notebook, self, self.pole_dipole_X_sistem, self.controller, 'Pole_dipole_X_sistem')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Pole_dipole_X_sistem')
+                    self.update_message(f'{len(self.pole_dipole_X_sistem)} - Длина массива для трехэлектродной установки, X-система')
+                    
                     
                 if self.pole_dipole_L_sistem:
                     body_tab_instance = DataTab(self.notebook, self, self.pole_dipole_L_sistem, self.controller, 'Pole_dipole_L_sistem')
                     self.nested_notebook.add(body_tab_instance.get_frame(), text='Pole_dipole_L_sistem')
-                    
+                    self.update_message(f'{len(self.pole_dipole_L_sistem)} - Длина массива для трехэлектродной установки, L-система')
 
     
                 # Обновляем сообщение
                 self.update_message(
-                    f'Данные разделены\n'
-                    f'{len(self.dipole_dipole)} - дипольная\n'
-                    f'{len(self.dipole_dipole_X_sistem)} - дипольная система Х\n'
-                    f'{len(self.dipole_dipole_L_sistem)} - дипольная система L\n'
-                    f'{len(self.schlumberger)} - шлюмберже\n'
-                    f'{len(self.pole_dipole)} - трехэлектродка\n'
-                    f'{len(self.pole_dipole_X_sistem)} - трехэлектродка система Х\n'
-                    f'{len(self.pole_dipole_L_sistem)} - трехэлектродка система L\n'
-                    f'{self.pl_messege} - Удалено элекродов M и N равноудаленных от A (Pole-Dipole)\n'
+                    f'{self.pl_messege} - удалено элекродов M и N равноудаленных от A (Pole-Dipole)\n'
 
                 )
     

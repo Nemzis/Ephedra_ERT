@@ -6,10 +6,13 @@ Created on Mon Mar  3 01:27:38 2025
 '''
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.ticker import ScalarFormatter, LogLocator
+from matplotlib.ticker import FormatStrFormatter
 import math #мат библиотека
+import numpy as np #мат библиотека линейная алгерба
 
 
-def separator (data, x, y, r):
+def separator (data):
     #Раскидываем на разные установки
     # 0 1    2    3     4     5     6        7         8  9  10    11  12      13  14  15  16  
     # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny
@@ -26,9 +29,9 @@ def separator (data, x, y, r):
     
     schlumberger  = list()
     
-    data = multiply_data(data, x, y, r)
     
     pl_messege = 0
+
     
     #функция определения длины отрезка
     def length_line(x1,y1,x2,y2):
@@ -57,9 +60,6 @@ def separator (data, x, y, r):
                 dipole_dipole.append(data[i])
                 
     if pole_dipole:
-        
-        
-        
         i = len(pole_dipole)-1
         while i >= 0:
             
@@ -82,9 +82,9 @@ def separator (data, x, y, r):
             if AM - AN == 0:
                 del pole_dipole[i]
                 pl_messege += 1
-                
+                             
+
             i -=1
-        
         
         
         
@@ -106,7 +106,16 @@ def separator (data, x, y, r):
     if schlumberger:
         pass              
 
-    return pole_dipole, pole_dipole_X_sistem, pole_dipole_L_sistem, dipole_dipole, dipole_dipole_L_sistem, dipole_dipole_X_sistem, schlumberger, pl_messege
+    return (
+        pole_dipole,
+        pole_dipole_X_sistem,
+        pole_dipole_L_sistem,
+        dipole_dipole,
+        dipole_dipole_L_sistem,
+        dipole_dipole_X_sistem,
+        pl_messege,
+        schlumberger
+    )
 
 
 
@@ -127,32 +136,79 @@ def filter_array(array, min_ROK, max_ROK, param_index):
 
 
 
-def gistogramma(array, a, title):
-    # Выбираем массив, индекс и подпись
-    data = [row[a] for row in array]  # Более компактный способ
+
+def gistogramma(array, a, title, SP):
+    # self.SP значения: 'Данные без ВП' 'Данные с ВП'
+    
+    data = [row[a] for row in array] 
+    
+
     
     n = int((len(array))**(0.5))  # Количество бинов
+    
     fig, ax = plt.subplots()
     
     # Заголовок
-    ax.set_title(title, fontsize=6)  # Размер шрифта заголовка
+    ax.set_title(title, fontsize=6)
+    
     
     # Сетка
     ax.grid(which='major')
     ax.grid(which='minor', linestyle=':')
+  
     
-    # Гистограмма
-    ax.hist(data, bins=n)
-    ax.set_xscale('log')
+    if a == 1 or a == 8 or a == 9:
+        
+        data = np.array(data)
+        data = data[data > 0]  # логарифм не любит нули
+        
+        n_log = np.logspace(
+            np.log10(data.min()),
+            np.log10(data.max()),
+            n
+            )
+        
+        
+        ax.hist(
+            data, 
+            bins=n_log,
+            )
+        ax.set_xscale('log')
+
+        
+    else:
+        ax.hist(
+            data, 
+            bins=n
+            )
+        ax.set_xscale('linear')
+    
+    
+    #if SP == 'Данные с ВП':
+    #else:
+        
     
     # Размер шрифта для меток осей
     ax.tick_params(axis='both', which='major', labelsize=6)  # Размер шрифта меток
     ax.set_xlabel('Значения', fontsize=6)  # Размер шрифта подписи оси X
-    ax.set_ylabel('Частость', fontsize=6)   # Размер шрифта подписи оси Y
+    
+    
+    
+    # нормальные числа на оси X
+    ax.xaxis.set_major_locator(LogLocator(base=10, subs=(1, 2, 5)))
+    formatter = ScalarFormatter()
+    formatter.set_scientific(False)
+    formatter.set_useOffset(False)
+    ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+    
+    #ax.set_ylabel('Частота (%)', fontsize=6)   # Размер шрифта подписи оси Y
+    ax.set_ylabel('Частота', fontsize=6)   # Размер шрифта подписи оси Y
     
     plt.close(fig)
     
     return fig  # Возвращаем объект Figure
+
+
 
 
 
@@ -165,6 +221,9 @@ def plot(array, a, b):
     :param b: Индекс для оси Y.
     :return: Объект Figure с графиком.
     """
+
+
+    
     fig = Figure(figsize=(5, 3))  # Создаём объект Figure
     ax = fig.add_subplot(111)  # Добавляем оси
 
@@ -176,8 +235,17 @@ def plot(array, a, b):
     ax.set_title('Электроды', fontsize=7)
     
     ax.plot(x, y, 'go', markersize=3)  # 'go' — зелёные кружки
-    ax.set_xlabel('X (м)', fontsize=6)  # Подпись оси X
-    ax.set_ylabel('Y (м)', fontsize=6)  # Подпись оси Y
+    
+    
+    if a == 1 and b ==8:
+        ax.set_xlabel('Apparent resistivity (Om*m)', fontsize=6)  # Подпись оси X
+        ax.set_ylabel('Volt (mV)', fontsize=6)  # Подпись оси Y
+    else:
+        ax.set_xlabel('X (м)', fontsize=6)  # Подпись оси X
+        ax.set_ylabel('Y (м)', fontsize=6)  # Подпись оси Y
+    
+    
+    
     ax.grid(which='major', linestyle=':')  # Сетка с пунктирными линиями
 
     # Устанавливаем размер шрифта для цифр на осях

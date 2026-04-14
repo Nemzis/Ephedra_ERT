@@ -5,9 +5,7 @@ Created on Mon Mar 17 01:50:15 2025
 @author: Vladimir
 '''
 
-
 import tkinter as tk
-from tkinter import ttk
 from tkinter import ttk, filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import copy 
@@ -25,7 +23,13 @@ class DataTab:
         
         self.type_array = type_array
         self.array_post_filter = list()
-        #эта хрень должна быть последней
+        
+        
+
+        
+        
+        
+        #эта хрень должна быть последней в этой функции почему? - не помню
         self.frame = self.create_data_tab()
         
         self.save_mode = tk.StringVar(value='rho')
@@ -73,7 +77,9 @@ class DataTab:
         self.button_safe_rho.grid(row=2, column=0, pady = 5, padx = 5, sticky='w')
             
         
-        
+        open_apply = ttk.Button(self.body_tab, width=w, text='     Восстановить\n исходный массив', command = self.recovery_filter )
+        open_apply.grid(row=4, column=0, padx = 5, pady = 5,  sticky='nsew')
+                
 
 
 
@@ -105,9 +111,7 @@ class DataTab:
         open_apply.grid(row=6, column=0, padx = 5, pady = 5, sticky='w')
         
                 
-        open_apply = ttk.Button(self.customer_frame_filter, width=w, text='   Восстановить\n исходный массив', command = self.recovery_filter )
-        open_apply.grid(row=7, column=0, padx = 5, pady = 5,  sticky='w')
-        
+
 
         
         
@@ -120,12 +124,12 @@ class DataTab:
         self.customer_frame_histogram.grid(row=0, column=1, rowspan = 2, padx=10, pady=10, sticky='nsew')
         
         # Создаём выпадающий список
-        if len(self.data[0]) > 17:
-            self.param_combobox = ttk.Combobox(self.customer_frame_histogram, values=['Rho', 'V (mV)', 'I (mA)', 'K', 'M'])
+        if len(self.data[0]) == 39:
+            self.param_combobox = ttk.Combobox(self.customer_frame_histogram, values=['Rho', 'Log(Rho)', 'V (mV)', 'I (mA)', 'K', 'M'])
             self.param_combobox.grid(row=1, column=0, padx=5, pady=5, sticky='wn')
             self.param_combobox.current(0)  # Устанавливаем значение по умолчанию (Rho)
         else:
-            self.param_combobox = ttk.Combobox(self.customer_frame_histogram, values=['Rho', 'V (mV)', 'I (mA)', 'K'])
+            self.param_combobox = ttk.Combobox(self.customer_frame_histogram, values=['Rho', 'Log(Rho)', 'V (mV)', 'I (mA)', 'K'])
             self.param_combobox.grid(row=1, column=0, padx=5, pady=5, sticky='wn')
             self.param_combobox.current(0)  # Устанавливаем значение по умолчанию (Rho)
         
@@ -244,9 +248,12 @@ class DataTab:
         
         #Возвращает индекс параметра.
         
-        if len(self.data[0]) > 17:
+        if len(self.data[0]) == 39:
             param_mapping = {
                 'Rho': 1,  # Индекс для Rho
+                
+                'Log(Rho)': 38,  # Индекс для Rho
+                
                 'V (mV)': 8,    # Индекс для V
                 'I (mA)': 9,    # Индекс для I
                 'K': 11,
@@ -256,9 +263,13 @@ class DataTab:
         else:
             param_mapping = {
                 'Rho': 1,  # Индекс для Rho
+                
+                'Log(Rho)': 17,  # Индекс для Rho
+                
                 'V (mV)': 8,    # Индекс для V
                 'I (mA)': 9,    # Индекс для I
-                'K': 11
+                'K': 11,
+                
             }
             
         return param_mapping.get(param, 1)  # По умолчанию возвращаем индекс для Rho
@@ -552,38 +563,7 @@ class DataTab:
         ).pack(anchor='w')
     
     
-    
-        '''
-        ttk.Checkbutton(
-            frame,
-            text='Добавлять заголовок',
-            variable=self.var_add_header
-        ).pack(anchor='w')
-        '''
-    
-
-        
-        '''
-        ttk.Button(
-            buttons_frame,
-            text='Закрыть',
-            command=self.settings_window.destroy
-        ).pack(side='right', padx=5)
-        '''
-        
-
-        '''
-        # Поле ввода для заголовка файла
-        label_zagolovok = tk.Label(self.customer_frame, text='Заголовок Res3Dinv:')
-        label_zagolovok.grid(row=0, column=0, sticky='wn', pady = 5, padx = 5)
-        
-        self.entry_zagolovok = tk.Entry(self.customer_frame, width=15)
-        self.entry_zagolovok.grid(row=1, column=0, sticky='w', pady = 5, padx = 5)
-        self.entry_zagolovok.insert(0, 'Test')
-        '''
-        
-
-        
+  
 
         # ---- разделитель ----
         ttk.Separator(frame).pack(fill='x', pady=5)

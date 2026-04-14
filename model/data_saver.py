@@ -13,7 +13,7 @@ def REC_in_files_for_INV(path, array, zagolovok_file, save_mode):
     # 0  1    2     3     4     5     6        7       8  9  10    11  12      13  14  15  16  
     # # Rho Spa.1 Spa.2 Spa.3 Spa.4 PassTime DutyCycle Vp In Dev.  K   Phase   Ay  By  My  Ny ...
     
-    print (save_mode)
+
     
     
     array_copy = copy.deepcopy(array)
