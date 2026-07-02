@@ -199,7 +199,6 @@ class Sim:
     
     def proccesing(self):
         
-       
         
         self.result_data = []  # Очищаем результаты перед расчётом
         tolerance = 0.001  # Допустимая погрешность при сравнении координат

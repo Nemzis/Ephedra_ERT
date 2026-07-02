@@ -8,7 +8,7 @@ from tkinter import ttk, filedialog
 from view.ui_tab import DataTab  # Импортируем класс DataTab для вкладок
 from module.komarov_sp.ui_KomarovSP import Komarov_SP
 from module.Sim.ui_Sim import Sim
-
+from module.tools.ui_tools import tools
 
 
 class UI:
@@ -50,9 +50,15 @@ class UI:
         komarov_tab_instance = Komarov_SP(self.notebook, self)
         self.notebook.add(komarov_tab_instance.get_frame(), text='ВП методом вычитания КС')
     
+    
         # Создаем вкладку модуля Sim
         Sim_tab_instance = Sim(self.notebook, self)
         self.notebook.add(Sim_tab_instance.get_frame(), text='VolDiff')
+        
+        
+        # Создаем вкладку модуля tools
+        tools_tab_instance = tools(self.notebook, self)
+        self.notebook.add(tools_tab_instance.get_frame(), text='Tools')    
   
     
         
