@@ -13,9 +13,8 @@ from tkinter import ttk
 from tkinter import filedialog
 import math
 import json
-import os
 import copy 
-
+from utils.path import get_path
 
 class Sim:
     def __init__(self, parent, ui):
@@ -76,6 +75,10 @@ class Sim:
         
         button_reset = ttk.Button(self.sim_body_tab, width=w, text='Сброс', command = self.reset)
         button_reset.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='nw')
+        a += 1
+        
+        open_button_safe_chek = ttk.Button(self.sim_body_tab, width = w, text='Cохранить настройки', command=self.on_closing)
+        open_button_safe_chek.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='nw')
         a += 1
         
         open_button_ask = ttk.Button(self.sim_body_tab, width = w, text='?', command=self.helper)
@@ -279,66 +282,76 @@ class Sim:
     
         
     
-    def helper(self):
-        with open('module/Sim/helper_Sim.txt', 'r', encoding='utf-8') as file:
-            file_content = file.read()
 
+
+    def helper(self):
+        with open(
+            get_path("module", "Sim", "helper_Sim.txt"),
+            "r",
+            encoding="utf-8"
+        ) as file:
+            file_content = file.read()
+    
         new_window = tk.Toplevel(self.sim_body_tab)
         new_window.title('Helper')
         new_window.geometry('650x400')
-
+    
         text_widget = tk.Text(new_window, wrap='word', font=('Arial', 10))
         text_widget.pack(fill='both', expand=True, padx=10, pady=10)
-
+    
         text_widget.insert('1.0', file_content)
         text_widget.config(state='disabled')
+       
         
-        
-        
+       
+
+    def save_state(self, state):
+        """Сохраняет состояния чекбоксов в файл."""
+        try:
+            settings_path = get_path("module", "Sim", "settings.json")
+    
+            # Создаем папку, если её нет
+            settings_path.parent.mkdir(parents=True, exist_ok=True)
+    
+            with open(settings_path, "w", encoding="utf-8") as file:
+                json.dump(state, file, indent=4)
+    
+            self.ui.update_message("Состояния успешно сохранены.")
+    
+        except Exception as e:
+            self.ui.update_message(f"Ошибка при сохранении состояний: {e}")
+    
+    
         
     def load_state(self):
-        '''Загружает состояния чекбоксов из файла.'''
+        '''Загружает состояния чекбоксов из файла'''
         try:
-            settings_path = os.path.join('module/Sim', 'settings.json')
-            if os.path.exists(settings_path):
-                with open(settings_path, 'r', encoding='utf-8') as file:
+            
+            settings_path = get_path("module", "Sim", "settings.json")
+            if settings_path.exists():
+                with open(settings_path, "r", encoding="utf-8") as file:
                     return json.load(file)
+                            
             else:
                 self.ui.update_message('Файл настроек не найден, используются значения по умолчанию.')
                 return {'check2': 0, 'check3': 0}
         except Exception as e:
             self.ui.update_message(f'Ошибка при загрузке состояний: {e}')
-            return {'check2': 0, 'check3': 0}
+            return {'check2': 0, 'check3': 0}      
         
         
     def on_closing(self):
         '''Обрабатывает закрытие окна.'''
-        self.state = {'check2': self.sim100.get()}
-        self.state = {'check3': self.sim_log.get()}
-        self.save_state(self.state)       
-       
+        self.state = {
+            'check2': self.sim100.get(),
+            'check3': self.sim_log.get()
+        }
+        self.save_state(self.state)        
+          
         
+  
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-            
-        
-        
-        
-       
-        
-       
-        
-       
-        
-       
+     
         
        
         

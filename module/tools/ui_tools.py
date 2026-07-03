@@ -11,11 +11,11 @@ Created on 02.07.2025
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-import math
-import json
 import os
 import copy 
-
+import gpxpy
+import csv
+from utils.path import get_path
 
 class tools:
     def __init__(self, parent, ui):
@@ -32,40 +32,69 @@ class tools:
     def create_tools_tab(self):
         self.tools_body_tab = ttk.Frame(self.parent)
 
-        a = 0
-        w = 20
+
+
+
+        w = 25
         
-        label = tk.Label(self.tools_body_tab, text='Tools (version v0.1.0 2026)')
-        label.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, columnspan=50,  sticky='nw')
-        a += 1
-
-        button_load_array_1 = ttk.Button(self.tools_body_tab, width=w, text='protocol > flank_protocol', command=self.open_file)
-        button_load_array_1.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='nw')
-        a += 1
-
-
+        # Заголовок
+        label = tk.Label(self.tools_body_tab, text='Tools (version v0.2.1 2026)')
+        label.grid(row=0, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='nw')
+        
+        # ============ ПЕРВЫЙ ФРЕЙМ ============
+        self.customer_frame = tk.LabelFrame(self.tools_body_tab, text='Фланговая расстановка')
+        self.customer_frame.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
+        
+        
+        # Label с описанием
         label = tk.Label(
-            self.tools_body_tab,
-            text='Введите итоговое минимальное расстояние\n между электродами'
+            self.customer_frame,
+            text='Расстояние между электродами'
         )
-        label.grid(row=a, column=0, sticky='nsew', pady=5, padx=5)
-        a += 1
+        label.grid(row=0, column=1, sticky='w', pady=5, padx=5)
         
+        
+        # Label с описанием
+        label = tk.Label(
+            self.customer_frame,
+            text='1'
+        )
+        label.grid(row=1, column=0, sticky='w', pady=5, padx=5)
+        
+        # Поле ввода
         self.step_var = tk.StringVar(value="2.5")
-        
         self.step = tk.Entry(
-            self.tools_body_tab,
+            self.customer_frame,
             textvariable=self.step_var,
-            width=5
+            width=10
         )
-        self.step.grid(row=a, column=0, sticky='nsew', pady=5, padx=5)
-        a += 1
-
-
-        open_button_ask = ttk.Button(self.tools_body_tab, width = w, text='?', command=self.helper)
-        open_button_ask.grid(row=a, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='nw')
-        a += 1
+        self.step.grid(row=1, column=1, sticky='w', pady=5, padx=5)
         
+    
+        
+        # Кнопка
+        button_load_array_1 = ttk.Button(self.customer_frame, width=w, text='protocol>flank_protocol', command=self.flank)
+        button_load_array_1.grid(row=2, column=1, ipadx=1, ipady=0, padx=5, pady=2, sticky='w')
+        # Label с описанием
+        
+        label = tk.Label(
+            self.customer_frame,
+            text='2'
+        )
+        label.grid(row=2, column=0, sticky='w', pady=5, padx=5)    
+
+        
+        # ============ ВТОРОЙ ФРЕЙМ ============
+        self.customer_frame_2 = tk.LabelFrame(self.tools_body_tab, text='Преобразование GPX')
+        self.customer_frame_2.grid(row=2, column=0, padx=5, pady=5, sticky='ew')
+        
+        # Кнопка
+        button_load_array_2 = ttk.Button(self.customer_frame_2, width=w, text='GPX > CSV (point)', command=self.GPX_to_CSV)
+        button_load_array_2.grid(row=0, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='w')
+        
+        # ============ КНОПКА ПОМОЩИ ============
+        open_button_ask = ttk.Button(self.tools_body_tab, width=5, text='?', command=self.helper)
+        open_button_ask.grid(row=3, column=0, ipadx=1, ipady=0, padx=5, pady=2, sticky='w')
         
 
         return self.tools_body_tab
@@ -75,33 +104,46 @@ class tools:
         return self.frame    
     
 
+
+    def test_file(self, file):
+        # ПРОВЕРКА: выбран ли файл
+        if not file:  # Если пользователь нажал "Отмена" или закрыл диалог
+            self.ui.update_message('Файл не выбран')
+            return  # Выходим из функции
+        
+        # ПРОВЕРКА: существует ли файл
+        if not os.path.exists(file):
+            self.ui.update_message(f'Файл не найден: {file}')
+            return
+        
+        # ПРОВЕРКА: является ли это файлом (не папкой)
+        if not os.path.isfile(file):
+            self.ui.update_message(f'Указанный путь не является файлом: {file}')
+            return
+        
+        return file  
     
-    def helper(self):
-        with open('module/tools/helper_tools.txt', 'r', encoding='utf-8') as file:
-            file_content = file.read()
-
-        new_window = tk.Toplevel(self.tools_body_tab)
-        new_window.title('Helper')
-        new_window.geometry('650x400')
-
-        text_widget = tk.Text(new_window, wrap='word', font=('Arial', 10))
-        text_widget.pack(fill='both', expand=True, padx=10, pady=10)
-
-        text_widget.insert('1.0', file_content)
-        text_widget.config(state='disabled')
-        
-        
-        
-        
-        
-    def open_file(self):
+    
+    def flank(self):
         filetypes = [
             ('Текстовые файлы', '*.txt'),
         ]
         
         self.filepath = filedialog.askopenfilename(filetypes=filetypes)
-        self.array = self.ui.controller.load_file_simple(self.filepath)
-
+        
+        try:
+            # Загружаем файл
+            self.filepath = self.test_file(self.filepath)
+            self.array = self.ui.controller.load_file_simple(self.filepath)
+            
+        except Exception as e:
+            self.ui.update_message(f'Ошибка при загрузке файла: {e}')
+            return  # Важно прервать выполнение при ошибке
+        
+        
+        # Если код дошел сюда - файл успешно загружен
+        self.ui.update_message(f'Файл успешно загружен: {os.path.basename(self.filepath)}')
+        
 
         #Работа со строкой
         name_file_safe = 0
@@ -178,10 +220,9 @@ class tools:
                     a-=1
                     b+=1  
             
-     
             for i in range(len(kosa)):
                 kosa[i][1] = i+1.1   
-               
+                    
                 
             #геометрия
             x=0
@@ -193,10 +234,8 @@ class tools:
                 x+=step
             xyz.sort(key=lambda x: x[0])
             
-    
 
             data = copy.deepcopy(self.array[48:])
-            
 
             for item in data:
                 item[0] = int(item[0])
@@ -226,30 +265,110 @@ class tools:
                     if kosa[i][1] == data[c][4]:
                         data[c][4] = kosa[i][0]
             
-            
             file = open(name, "w")
-            file.write(f'#\tX\tY\tZ\n')
+            file.write('#\tX\tY\tZ\n')
             
             for item in xyz:
                 file.write(f'{int(item[0])}\t{float(item[1])}\t{float(item[2])}\t{float(item[3])}\n')
                 
-            file.write(f'#\tA\tB\tM\tN\n')
+            file.write('#\tA\tB\tM\tN\n')
             for item in data:
                 tmp = '\t'.join(str(int(x)) for x in item)
                 file.write(tmp + '\n')
                 
             file.close()
             
-            self.ui.update_message(f'Преобразование файла акончено {name},уe файл {index + 1} из 4')
+            self.ui.update_message(f'Преобразование файла акончено {name}, {index + 1} из 4')
 
+
+
+
+
+        
+        
+    def GPX_to_CSV(self):
+        #на вход GPX на выход CSV
+    
+        filetypes = [('Текстовые файлы', '*.gpx')]
+        
+        self.filepath = filedialog.askopenfilename(filetypes=filetypes)
+
+        try:
+            # Загружаем файл
+            self.filepath = self.test_file(self.filepath)
+            
+            #Работа со строкой
+            name_file_safe = ''
+            path_safe = ''
+            i = len(self.filepath)-1
+            dl = len(self.filepath)
+            while True:
                 
+                if self.filepath[i] == '/':
+                    name_file_safe = self.filepath[i+1:dl]
+                    break
+                    
+                path_safe = self.filepath[0:i]
+                i-=1
             
+            #print(f'{name_file_safe} - Входной файл') 
+            name_file_safe = name_file_safe.replace('.gpx', '.csv')
+            #print(f'{name_file_safe} - Сохраеннный файл')     
+            
+            
+            # Открываем и парсим GPX файл
+            with open(self.filepath) as gpx_file:
+                gpx = gpxpy.parse(gpx_file)
+            
+            
+            with open(path_safe + name_file_safe, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['name', 'latitude', 'longitude', 'elevation', 'time', 'comment', 'sym']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+                
+                writer.writeheader()
+                
+                # Сохраняем waypoints (отдельные точки)
+                for waypoint in gpx.waypoints:
+                    writer.writerow({
+                        'name': waypoint.name if waypoint.name else '',
+                        'latitude': waypoint.latitude,
+                        'longitude': waypoint.longitude,
+                        'elevation': waypoint.elevation if waypoint.elevation else '',
+                        'time': waypoint.time.strftime("%Y-%m-%d %H:%M:%S") if waypoint.time else '',
+                        'comment': waypoint.comment if waypoint.comment else '',
+                        'sym': waypoint.symbol if waypoint.symbol else ''
+                    })                  
+            
+            
+            # Если код дошел сюда - файл успешно загружен
+            self.ui.update_message(f'Файл {os.path.basename(self.filepath)} преобразован.')
+            self.ui.update_message(f'{name_file_safe} - Сохраеннный файл')
+            
+        except Exception as e:
+            self.ui.update_message(f'Ошибка при загрузке файла: {e}')
+            return  # Важно прервать выполнение при ошибке
+        
+        
 
-            
         
-        
-        
-        
+    def helper(self):
+        with open(
+            get_path("module", "tools", "helper_tools.txt"),
+            "r",
+            encoding="utf-8"
+        ) as file:
+            file_content = file.read()
+    
+        new_window = tk.Toplevel(self.tools_body_tab)
+        new_window.title('Helper')
+        new_window.geometry('650x400')
+    
+        text_widget = tk.Text(new_window, wrap='word', font=('Arial', 10))
+        text_widget.pack(fill='both', expand=True, padx=10, pady=10)
+    
+        text_widget.insert('1.0', file_content)
+        text_widget.config(state='disabled')
+    
         
         
         

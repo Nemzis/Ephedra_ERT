@@ -177,8 +177,3 @@ def load_file_simple(path):
 
 
 
-
-
-
-
-
